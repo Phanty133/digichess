@@ -57,7 +57,7 @@ The chess pieces will be specifically designed to fit into the slots on the ches
 
 \subsection*{Chessboard interface}
 
-The chessboard interface will utilize the Chipkit uC32 microcontroller to perform all logic. It will be programmed in C using MCB32tools.
+The chessboard interface will utilize the Chipkit uC32 microcontroller to perform all logic. It will be programmed in C using the MCB32 toolchain.
 
 For detecting the position of the pieces on the chessboard and to provide visual feedback, we will use 4 custom-designed PCBs, each of which cover a 2x8 section of the game board. The modules have the ability to daisy-chain to reduce the number of wires required and reduce assembly time. Each module consists of a hall-effect latch under each square (16 per module), 3 WS2812B NeoPixel LEDs under each square (48 per module), and the necessary passive components. Each module includes 2 74HC251D 8 to 1 multiplexers for interfacing the hall-effect sensors. For daisy-chaining the modules, we will use male-female pairs of 2x8 and 2x4 100mil pitch angled pin headers. The 2x8 pin header will provide all control signals and 2 VCC and GND pins. The 2x4 pin header will be located on the opposite end of the PCB and it is designed to provide most of the power through 4 VCC and 4 GND pins and to improve the mechanical stability of the daisy-chained modules. For selecting the order of the modules in the daisy-chained sequence, we will use a block of pin jumpers.
 
@@ -75,7 +75,7 @@ For providing a player-vs-computer mode, we need to use a Linux-based computer t
 
 \section{Verification}
 
-For verifying logic that is independent of hardware, we will use systematic unit tests through the PlatformIO framework. To verify the functionality of the hardware, we will use test software that will test each component individually. The success of a hardware test will be determined either by visual inspection, e.g. whether an LED lit up correctly, or in-code assertions, e.g. whether the promotion selector input has the correct value when idle.
+For verifying logic that is independent of hardware, we will use systematic unit tests. To verify the functionality of the hardware, we will use test software that will test each component individually. The success of a hardware test will be determined either by visual inspection, e.g. whether an LED lit up correctly, or in-code assertions, e.g. whether the promotion selector input has the correct value when idle.
 
 \section{Contributions}
 
