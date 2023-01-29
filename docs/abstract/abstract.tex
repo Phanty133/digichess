@@ -1,6 +1,9 @@
 \documentclass{article}
 \usepackage[a4paper]{geometry}
+\usepackage[final]{pdfpages}
 \usepackage[toc,page]{appendix}
+\usepackage{float}
+\usepackage{pdflscape}
 
 \title{IS1200 \textbf{Advanced} project\\Digital chessboard based on a grid of hall-effect sensors}
 \author{Nikoloz Miruashvili (?), Kristians Vinters (031105-3938)}
@@ -87,7 +90,13 @@ The final division of work will be outlined in the final report.
 Reflections will be discussed in the final report.
 
 \begin{appendices}
-	\section{Expected system architecture}
+	\begin{landscape}
+		\section{Expected system architecture}
+		\begin{figure}[H]
+			\includepdf[pages=-,angle=90]{appendix/digichess_architecture.pdf}
+		\end{figure}
+	\end{landscape}
+
 	\section{Draft model of the chessboard face}
 	\section{Cross-section view of a square's piece slot}
 	\section{Board module PCB}
