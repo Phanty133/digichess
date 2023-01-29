@@ -4,6 +4,7 @@
 \usepackage[toc,page]{appendix}
 \usepackage{float}
 \usepackage{pdflscape}
+\usepackage{graphics}
 
 \title{IS1200 \textbf{Advanced} project\\Digital chessboard based on a grid of hall-effect sensors}
 \author{Nikoloz Miruashvili (?), Kristians Vinters (031105-3938)}
@@ -13,7 +14,7 @@
 
 \section{Objective and requirements}
 
-The purpose of this project is to develop an interactive platform on which the classic game of chess can be played. The platform, which will further on be referred to as the digital chessboard, is a chessboard-inspired board on which purpose-built chess pieces are placed and moved.
+The purpose of this project is to develop an interactive platform on which the classic game of chess can be played. The platform, which further on will be referred to as the digital chessboard, is a chessboard-inspired device on which purpose-designed chess pieces are placed and moved.
 
 The requirements for the project are categorized into \textbf{Must have}, \textbf{Should have}, and \textbf{Nice to have}.
 
@@ -21,7 +22,7 @@ The requirements for the project are categorized into \textbf{Must have}, \textb
 \begin{itemize}
 	\item The digital chessboard must support a player-vs-player mode
 	\item The player must be able to perform any move that one could make in a standard chess game, including but not limited to moving a piece according to a predetermined pattern, capturing an opponent's piece, castling, en passant, pawn promotion, check and mate
-	\item The digital chessboard must be able to track where each piece is moved, when starting from a known start position
+	\item The digital chessboard must be able to track where each piece is moved, when starting from a known position
 	\item The digital chessboard must provide visual feedback on possible moves when a player picks up a piece
 	\item The player must be able to select a pawn promotion target (queen, rook, bishop, or knight) when such a move is available
 	\item The digital chessboard must provide feedback on which player's turn it is
@@ -44,13 +45,13 @@ The requirements for the project are categorized into \textbf{Must have}, \textb
 
 \section{Solution}
 
-The project solution is split into 3 parts, each regarding an independent section of the project: \textbf{Chassis}, \textbf{Chessboard interface}, \textbf{Player-vs-computer interface}. Preliminary work is attached in the appendix.
+The project solution is split into 3 parts, each regarding an independent section of the project: \textbf{Chassis and chess pieces}, \textbf{Chessboard interface}, \textbf{Player-vs-computer interface}. We will use a wide variety of software during the course of the project. For 3D modelling work we will use Autodesk Fusion 360\footnote{Add whatever other software you will use}. For general documentation and technical drawings we will use Autodesk AutoCAD. For slicing and preparing a model for 3D printing we will use UltiMaker Cura. For schematics and PCB design we will use Altium Designer. Preliminary work is attached in the appendix.
 
 \subsection*{Chassis and chess pieces}
 
 The chassis and chess pieces will be entirely 3D printed with PLA filament.
 
-The chassis will be split into multiple parts and has three sections: control electronics, promotion selection, and game area. The control electronics compartment will house the electronics responsible for game logic and power delivery. The promotion selection compartment will house the user inputs and pre-conditioning electronics for selecting a pawn promotion target. The top face of the game area compartment will be where players move their pieces. The top face of the game area will use a novel 8x8 chessboard design, where each square will have a slot for a chess piece. Such a design is necessary to ensure accurate piece placement to prevent hall-effect sensor false positives. The game area compartment will contain the hall-effect sensor array for tracking pieces and the LED lighting array for providing player feedback by illuminating each board square individually.
+The chassis will be split into multiple parts and has three sections: control electronics, promotion selection, and game area. The control electronics compartment will house the electronics responsible for game logic and power delivery. The promotion selection compartment will house the user inputs and the required passive components for selecting a pawn promotion target. The top face of the game area compartment will be where players move their pieces. The top face of the game area will use a novel 8x8 chessboard design, where each square will have a slot for a chess piece. Such a design is necessary to ensure accurate piece placement to prevent hall-effect sensor false positives. The game area compartment will contain the hall-effect sensor array for tracking pieces and the LED lighting array for providing player feedback by illuminating each board square individually.
 
 The chess pieces will be specifically designed to fit into the slots on the chessboard. Each chess piece will have a 2x1mm neodymium magnet in the bottom, which will trigger the hall-effect latch under each board square.
 
@@ -65,6 +66,8 @@ On the end of the daisy-chained modules, connected through the remaining 2x8 pin
 The pawn promotion selector will consist of 4 push buttons and 5 WS2812B LEDs. One LED will indicate whether a pawn promotion is available, the rest correspond to the selection of each promotion target. Each button corresponds to a promotion target. If a pawn promotion is available, and a promotion target button is pushed, the LED next to the button lights up. The microcontroller will determine which button is pushed with the ADC, as each button will be connected to a different voltage level through a network of voltage dividers.
 
 For providing additional player feedback, the microcontroller will connect to an SPI 0.96" LCD display and a passive piezoelectric buzzer.
+
+The input voltage to the system will be 5V in order to power the LEDs. The microcontroller will use the built-in 3.3V voltage regulator to ensure its operating voltage range. The pawn promotion selector will use 3.3V because the PIC32 analog capable I/O pins are not 5V tolerant. While the PIC32 digital I/O pins are 5V tolerant, the 74HC251D multiplexer may not work reliably with a 3.3V HIGH voltage when VCC is 5V, so a bi-directional logic level shifter based on the BSS138PS MOSFET will be used.
 
 \subsection*{Player-vs-computer interface}
 
@@ -98,8 +101,35 @@ Reflections will be discussed in the final report.
 	\end{landscape}
 
 	\section{Draft model of the chessboard face}
-	\section{Cross-section view of a square's piece slot}
+
+	\begin{figure}[H]
+		\includegraphics[width=\textwidth]{appendix/board.png}
+	\end{figure}
+
+	\begin{landscape}
+		\section{Cross-section view of a square's piece slot}
+
+		\begin{figure}[H]
+			\includepdf[pages=-,angle=90]{appendix/square_side2-Model.pdf}
+		\end{figure}
+	\end{landscape}
+
 	\section{Board module PCB}
+
+	\begin{figure}[H]
+		\includegraphics[width=\textwidth]{appendix/pcb_top.png}
+		\includegraphics[width=\textwidth]{appendix/pcb_3d_top.png}
+		\includegraphics[width=\textwidth]{appendix/pcb_bot.png}
+		\includegraphics[width=\textwidth]{appendix/pcb_3d_bot.png}
+	\end{figure}
+
+	\newpage
+
+	\section{Board module daisy-chain connector pinout}
+
+	\begin{figure}[H]
+		\includepdf[pages=-,angle=0,offset=-1in 3in]{appendix/MainConnectorPinout-Model.pdf}
+	\end{figure}
 \end{appendices}
 
 \end{document}
