@@ -89,12 +89,12 @@ $(DEPDIR):
 	@cp $(BUILD_DIR)/$*.c.d $(df).c.P; sed -e 's/#.*//' -e 's/^[^:]*: *//' -e 's/ *\\$$//' -e '/^$$/ d' -e 's/$$/ :/' < $(BUILD_DIR)/$*.c.d >> $(df).c.P; $(RM) $(BUILD_DIR)/$*.c.d
 
 # Compile ASM files with C pre-processor directives
-%.S.o: %.S envcheck | $(DEPDIR)
-	$(CC) $(CFLAGS) $(ASFLAGS) -c -MD -o $(BUILD_DIR)/$@ $<
+%.S.o: $(SRC_DIR)/%.S envcheck | $(DEPDIR)
+	$(CC) $(CFLAGS) $(ASFLAGS) -c -MD -o $(BUILD_DIR)/$@ $< -I$(INC_DIR)
 	@cp $(BUILD_DIR)/$*.S.d $(df).S.P; sed -e 's/#.*//' -e 's/^[^:]*: *//' -e 's/ *\\$$//' -e '/^$$/ d' -e 's/$$/ :/' < $(BUILD_DIR)/$*.S.d >> $(df).S.P; $(RM) $(BUILD_DIR)/$*.S.d
 
 # Link symbol lists to object files
-%.syms.o: %.syms
+%.syms.o: $(SRC_DIR)/%.syms
 	$(LD) -o $(BUILD_DIR)/$@ -r --just-symbols=$<
 
 build_dir:
