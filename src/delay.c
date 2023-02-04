@@ -8,14 +8,14 @@ static uint32_t readCoreTimer() {
 	return timer;
 }
 
-void delayMilli(uint32_t ms) {
+void delay_milli(uint32_t ms) {
 	uint32_t startTimer = readCoreTimer();
 	uint32_t waitCnt = ms * __SCALE_ms;
 
 	while(readCoreTimer() - startTimer < waitCnt);
 }
 
-void delayMicro(uint32_t us) {
+void delay_micro(uint32_t us) {
 	uint32_t startTimer = readCoreTimer();
 	uint32_t waitCnt = us * __SCALE_us;
 

@@ -8,7 +8,7 @@
 #define __SCALE_us (SYS_FREQ / 2000000)
 #define __SCALE_ms (SYS_FREQ / 2000)
 
-void delayMilli(uint32_t ms);
-void delayMicro(uint32_t us);
+void delay_milli(uint32_t ms);
+void delay_micro(uint32_t us);
 
 #endif
