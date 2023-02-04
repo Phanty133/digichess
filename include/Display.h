@@ -9,11 +9,11 @@
 // Testing the display with the uno-compatible shield
 // 8080 MCU 8-bit bus interface Ⅱ
 
-#define RST_MASK 1 << 12
-#define CS_MASK 1 << 10
-#define DC_MASK 1 << 8
-#define WR_MASK 1 << 4
-#define RD_MASK 1 << 2
+#define RST_MASK (1 << 12)
+#define CS_MASK (1 << 10)
+#define DC_MASK (1 << 8)
+#define WR_MASK (1 << 4)
+#define RD_MASK (1 << 2)
 
 #define get_bit(n, k) (n & ( 1 << k )) >> k
 #define set_bit(n, k, x) n ^ ((-x ^ n) & (1UL << k));

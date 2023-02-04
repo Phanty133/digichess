@@ -100,38 +100,42 @@ void setBusData(uint8_t data) {
 		bits[i] = get_bit(data, i);
 	}
 
+	uint16_t port1 = PORTD;
+
 	// TODO: make more efficient
-	PORTD = set_bit(PORTD, 10, bits[0]);
-	PORTD = set_bit(PORTD, 3, bits[1]);
-	PORTD = set_bit(PORTD, 8, bits[2]);
-	PORTD = set_bit(PORTD, 0, bits[3]);
+	port1 = set_bit(port1, 10, bits[0]);
+	port1 = set_bit(port1, 3, bits[1]);
+	port1 = set_bit(port1, 8, bits[2]);
+	port1 = set_bit(port1, 0, bits[3]);
+	port1 = set_bit(port1, 1, bits[5]);
+	port1 = set_bit(port1, 2, bits[6]);
+	port1 = set_bit(port1, 9, bits[7]);
+
+	PORTD = port1;
 	PORTF = set_bit(PORTF, 1, bits[4]);
-	PORTD = set_bit(PORTD, 1, bits[5]);
-	PORTD = set_bit(PORTD, 2, bits[6]);
-	PORTD = set_bit(PORTD, 9, bits[7]);
 }
 
 void pulseWrite() {
-	PORTB |= WR_MASK;
-	PORTB &= ~WR_MASK;
+	PORTBSET = WR_MASK;
+	PORTBCLR = WR_MASK;
 }
 
 void pulseRead() {
-	PORTB |= RD_MASK;
-	PORTB &= ~RD_MASK;
+	PORTBSET = RD_MASK;
+	PORTBCLR = RD_MASK;
 }
 
 void resetDisplay() {
-	PORTB &= RST_MASK;
-	PORTB |= RST_MASK;
+	PORTBCLR = RST_MASK;
+	PORTBSET = RST_MASK;
 	delayMilli(150);
 }
 
 void writeCommand(uint8_t command) {
 	// D/C - LOW
 	// RD - HIGH
-	PORTB &= ~DC_MASK;
-	PORTB |= RD_MASK;
+	PORTBSET = RD_MASK;
+	PORTBCLR = DC_MASK;
 
 	setBusData(command);
 	pulseWrite();
@@ -140,8 +144,7 @@ void writeCommand(uint8_t command) {
 void writeData(uint8_t data) {
 	// D/C - HIGH
 	// RD - HIGH
-	PORTB |= DC_MASK;
-	PORTB |= RD_MASK;
+	PORTBSET = DC_MASK + RD_MASK;
 
 	setBusData(data);
 	pulseWrite();
@@ -158,8 +161,7 @@ void writeRegister(uint8_t command, uint8_t* data, uint32_t dataSize) {
 void readData() {
 	// D/C - HIGH
 	// WR - HIGH
-	PORTB |= DC_MASK;
-	PORTB |= WR_MASK;
+	PORTBSET = DC_MASK + WR_MASK;
 }
 
 void sleepOut() {
@@ -210,16 +212,19 @@ void powerOnSequence() {
 	displayOn();
 }
 
-void setAddressWindow(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1) {
+void setAddressWindow(uint16_t x0, uint16_t y0, uint16_t w, uint16_t h) {
+	uint16_t x1 = (x0 + w - 1);
+	uint16_t y1 = (y0 + h - 1);
+
 	// Column Address Set
-	writeCommand(0x2A);
+	writeCommand(ILI9341_CASET);
 	writeData((uint8_t)(x0 >> 8));
 	writeData((uint8_t)x0);
 	writeData((uint8_t)(x1 >> 8));
 	writeData((uint8_t)x1);
 
 	// Page Address Set
-	writeCommand(0x2B);
+	writeCommand(ILI9341_PASET);
 	writeData((uint8_t)(y0 >> 8));
 	writeData((uint8_t)y0);
 	writeData((uint8_t)(y1 >> 8));
@@ -234,30 +239,61 @@ void initDisplay() {
 	powerOnSequence();
 	delayMilli(150);
 
-	int x0 = 0;
-	int y0 = 0;
-	int x1 = ILI9341_TFTWIDTH;
-	int y1 = ILI9341_TFTHEIGHT;
+	writeCommand(0x38);
 
-	setAddressWindow(x0, y0, x1, y1);
+	int x0 = 1;
+	int y0 = 1;
+	int w = 238;
+	int h = 318;
 
-	int dx = x1 - x0;
-	int dy = y1 - y0;
+	setAddressWindow(x0, y0, w, h);
 
 	writeCommand(0x2C);
-	
-	PORTB |= DC_MASK;
-	PORTB |= RD_MASK;
 
-	for (int i = 0; i < dx * dy; i++) {
-		setBusData(0xFF);
+	PORTBSET = DC_MASK + RD_MASK;
+	setBusData(0xFF);
+
+	for (int i = 0; i < w * h; i++) {
 		pulseWrite();
-
-		setBusData(0xFF);
 		pulseWrite();
 	}
 
-	delayMilli(1000);
+	setAddressWindow(80, 160, 40, 40);
 
-	resetDisplay();
+	writeCommand(0x2C);
+	PORTBSET = DC_MASK + RD_MASK;
+
+	for (int i = 0; i < 40 * 40; i++) {
+		setBusData(0xF8);
+		pulseWrite();
+
+		setBusData(0x00);
+		pulseWrite();
+	}
+
+	setAddressWindow(80, 120, 40, 40);
+
+	writeCommand(0x2C);
+	PORTBSET = DC_MASK + RD_MASK;
+
+	for (int i = 0; i < 40 * 40; i++) {
+		setBusData(0x07);
+		pulseWrite();
+
+		setBusData(0xE0);
+		pulseWrite();
+	}
+
+	setAddressWindow(80, 80, 40, 40);
+
+	writeCommand(0x2C);
+	PORTBSET = DC_MASK + RD_MASK;
+
+	for (int i = 0; i < 40 * 40; i++) {
+		setBusData(0x00);
+		pulseWrite();
+
+		setBusData(0x1F);
+		pulseWrite();
+	}
 }
