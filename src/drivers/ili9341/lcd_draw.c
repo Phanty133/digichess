@@ -4,6 +4,9 @@ void lcd_set_address_window(uint16_t x0, uint16_t y0, uint16_t w, uint16_t h) {
 	uint16_t x1 = (x0 + w - 1);
 	uint16_t y1 = (y0 + h - 1);
 
+	if (x1 >= ILI9341_TFTWIDTH) x1 = ILI9341_TFTWIDTH - 1;
+	if (y1 >= ILI9341_TFTHEIGHT) y1 = ILI9341_TFTHEIGHT - 1;
+
 	uint8_t casetData[] = {
 		x0 >> 8,
 		x0,

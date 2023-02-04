@@ -22,4 +22,8 @@ void uart_write_line(const char* data);
 char uart_read_byte();
 bool uart_read_available();
 
+// a very shitty int to char* function
+// here only because i couldnt get sprintf to compile
+void num2char(uint32_t num, char* buf, const uint32_t bufsize);
+
 #endif
