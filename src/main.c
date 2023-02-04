@@ -1,7 +1,7 @@
 #include <pic32mx.h>
 #include <stdint.h>
 #include <stdbool.h>
-#include "Display.h"
+#include "drivers/ili9341/Display.h"
 
 int main(void) {
 	initDisplayPins();
