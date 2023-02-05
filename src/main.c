@@ -40,11 +40,24 @@ int main(void) {
 		);
 		lcd_select();
 
+		delay_micro(50);
+
 		if (!isTouching) continue;
 		if (
 			touchX < radius || touchX > ILI9341_TFTWIDTH - radius
 			|| touchY < radius || touchY > ILI9341_TFTHEIGHT - radius
 		) continue;
+
+		char buf_x[16];
+		num2char(touchX, buf_x, 16);
+
+		char buf_y[16];
+		num2char(touchY, buf_y, 16);
+
+		uart_write("X: ");
+		uart_write(buf_x);
+		uart_write("; Y: ");
+		uart_write_line(buf_y);
 
 		lcd_set_address_window(
 			clamp(touchX - radius, 0, ILI9341_TFTWIDTH),

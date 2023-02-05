@@ -9,14 +9,34 @@ static uint16_t read_adc() {
 	return ADC1BUF0;
 }
 
-static uint16_t read_xm() {
-	AD1CHS = (8 << 16);
-	return read_adc();
+/// @brief Read a number of samples from the ADC. Sample count set by __TOUCH_ADC_SAMPLES
+/// @param val Pointer where to write the output value
+/// @return True if the touch is definitive, False if ambiguous
+static bool read_averaged_adc(uint16_t* val) {
+	uint16_t samples[2];
+
+	for (int i = 0; i < 2; i++) {
+		samples[i] = read_adc();
+	}
+
+	uint16_t dSample = samples[0] - samples[1];
+
+	if (dSample < -4 || dSample > 4) {
+		return false;
+	} else {
+		*val = (samples[0] + samples[1]) >> 1; // Average the two samples
+		return true;
+	}
 }
 
-static uint16_t read_yp() {
+static bool read_xm(uint16_t* val) {
+	AD1CHS = (8 << 16);
+	return read_averaged_adc(val);
+}
+
+static bool read_yp(uint16_t* val) {
 	AD1CHS = (10 << 16);
-	return read_adc();
+	return read_averaged_adc(val);
 }
 
 void lcd_touch_init() {
@@ -35,7 +55,6 @@ void lcd_touch_init() {
 	AD1CON1SET = (0x1 << 15); // turn on ADC	
 }
 
-/// @brief Reset the pin I/O for use with the LCD
 void lcd_touch_reset_pins() {
 	uint16_t digitalPinMask = __TOUCH_YM_MASK + __TOUCH_XP_MASK;
 	TRISDCLR = digitalPinMask;
@@ -47,7 +66,7 @@ void lcd_touch_reset_pins() {
 	LATBCLR = analogPinMask;
 }
 
-uint16_t lcd_touch_read_x() {
+bool lcd_touch_read_x(uint16_t* outX) {
 	// Set both Y pins as inputs
 	TRISDSET = __TOUCH_YM_MASK;
 	LATDCLR = __TOUCH_YM_MASK;
@@ -69,10 +88,10 @@ uint16_t lcd_touch_read_x() {
 	delay_micro(20); // Let voltages settle
 
 	// Read and return Y+
-	return read_yp();
+	return read_yp(outX);
 }
 
-uint16_t lcd_touch_read_y() {
+bool lcd_touch_read_y(uint16_t* outY) {
 	// Set both X pins as inputs
 	TRISDSET = __TOUCH_XP_MASK;
 
@@ -90,10 +109,15 @@ uint16_t lcd_touch_read_y() {
 	// Pull Y- LOW
 	LATDCLR = __TOUCH_YM_MASK;
 
-	delay_micro(20); // Let voltages settle
+	delay_micro(50); // Let voltages settle
 
-	// Read and return X-
-	return 1023 - read_xm();
+	uint16_t outVal;
+	bool isValid = read_xm(&outVal);
+
+	if (!isValid) return false;
+
+	*outY = 1023 - outVal;
+	return true;
 }
 
 uint16_t lcd_touch_read_pressure(uint16_t x_val) {
@@ -107,15 +131,29 @@ uint16_t lcd_touch_read_pressure(uint16_t x_val) {
 	TRISBSET = __TOUCH_XM_MASK + __TOUCH_YP_MASK;
 	AD1PCFGCLR = __TOUCH_XM_MASK + __TOUCH_YP_MASK;
 
-	delay_micro(20);
+	delay_micro(50);
 
-	uint16_t z1 = read_xm();
-	uint16_t z2 = read_yp();
+	uint16_t z1, z2;
+
+	bool z1Valid = read_xm(&z1);
+	bool z2Valid = read_yp(&z2);
+
+	if (!z1Valid || !z2Valid) return 65535; // very stupid
+
+	uint16_t x;
+
+	if (x_val == 0) {
+		bool valid = lcd_touch_read_x(&x);
+
+		if (!valid) return 65535; // very stupid
+	} else {
+		x = x_val;
+	}
 
 	float rtouch = z2;
 	rtouch /= z1;
 	rtouch -= 1;
-	rtouch *= x_val == 0 ? lcd_touch_read_x() : x_val;
+	rtouch *= x;
 	rtouch *= __TOUCH_X_RESISTANCE;
 	rtouch /= 1024;
 
@@ -129,8 +167,12 @@ bool lcd_touch_read_coords(
 	uint16_t* outY,
 	bool resetPins
 ) {
-	uint16_t x = lcd_touch_read_x();
-	uint16_t y = lcd_touch_read_y();
+	uint16_t x, y;
+
+	bool xValid = lcd_touch_read_x(&x);
+	bool yValid = lcd_touch_read_y(&y);
+
+	if (!xValid || !yValid) return false;
 
 	// Check if the screen is being touched
 	if (
@@ -153,10 +195,14 @@ bool lcd_touch_read_coords(
 
 void lcd_touch_debug_raw() {
 	while(1) {
-		uint16_t x = lcd_touch_read_x();
-		uint16_t y = lcd_touch_read_y();
+		uint16_t x, y;
+
+		bool xValid = lcd_touch_read_x(&x);
+		bool yValid = lcd_touch_read_y(&y);
 		// uint16_t z = lcd_touch_read_pressure(0);
 		uint16_t z = 0;
+
+		if (!xValid || !yValid) continue;
 
 		char buf_x[16];
 		num2char(x, buf_x, 16);

@@ -27,15 +27,25 @@
 #define __TOUCH_Y_MAX (930)
 #define __TOUCH_Y_DELTA (__TOUCH_Y_MAX - __TOUCH_Y_MIN)
 
+/// @brief Initializes the ADC for reading the touchscreen
 void lcd_touch_init();
+
+/// @brief Reset the pin I/O for use with the LCD
 void lcd_touch_reset_pins();
 
-// Read raw
-uint16_t lcd_touch_read_x();
-uint16_t lcd_touch_read_y();
+
+bool lcd_touch_read_x(uint16_t* outX);
+
+/// @brief Read the raw Y axis output
+/// @return Raw Y output
+bool lcd_touch_read_y(uint16_t* outY);
+
+/// @brief Read the pressure applied. Kind of broken. Probably best if not used
+/// @return Raw pressure applied
 uint16_t lcd_touch_read_pressure(uint16_t x_val);
 
-// Read coordinates
+/// @brief Read the X and Y touch positions on the screen
+/// @return True if the screen is touched, False if not touched
 bool lcd_touch_read_coords(
 	uint16_t screenWidth,
 	uint16_t screenHeight,
@@ -44,8 +54,10 @@ bool lcd_touch_read_coords(
 	bool resetPins
 );
 
-// Debug funcs; UART must be initialized
+/// @brief Read and write the touchscreen's raw X and Y axis outputs to UART every 100ms
 void lcd_touch_debug_raw();
+
+/// @brief Read and write the output of lcd_touch_read_coords to UART every 100ms
 void lcd_touch_debug_coords();
 
 #endif

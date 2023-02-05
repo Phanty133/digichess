@@ -40,3 +40,37 @@ void lcd_fill(uint16_t color, uint16_t w, uint16_t h) {
 		lcd_write_strobe();
 	}
 }
+
+void lcd_calibrate(uint8_t direction) {
+	uint16_t w, h;
+
+	if (direction == 0) {
+		w = ILI9341_TFTHEIGHT;
+		h = ILI9341_TFTWIDTH;
+	} else {
+		h = ILI9341_TFTHEIGHT;
+		w = ILI9341_TFTWIDTH;
+	}
+
+	uint16_t size = 32;
+
+	// Fill screen with white
+	lcd_set_address_window(0, 0, 240, 320);
+	lcd_fill(rgb_24b_to_16b(0xFFFFFF), 240, 320);
+
+	// Corner top left
+	lcd_set_address_window(0, 0, size, size);
+	lcd_fill(rgb_24b_to_16b(0xFF0000), size, size);
+
+	// Corner top right
+	lcd_set_address_window(w - size, 0, size, size);
+	lcd_fill(rgb_24b_to_16b(0x00FF00), size, size);
+
+	// Corner bottom left
+	lcd_set_address_window(0, h - size, size, size);
+	lcd_fill(rgb_24b_to_16b(0x0000FF), size, size);
+
+	// Corner bottom right
+	lcd_set_address_window(w - size, h - size, size, size);
+	lcd_fill(rgb_24b_to_16b(0x000000), size, size);
+}
