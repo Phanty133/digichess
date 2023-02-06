@@ -5,71 +5,52 @@
 #include "drivers/ili9341/lcd_utils.h"
 #include "drivers/ili9341/lcd_touch.h"
 #include <stdbool.h>
-#include "bitops.h"
-
-int clamp(int val, int min, int max) {
-	if (val <= min) return min;
-	if (val >= max) return max;
-	return val;
-}
 
 int main(void) {
 	uart_begin(115200);
 
 	lcd_init();
-	lcd_touch_init();
 	lcd_select();
 
 	// Fill screen with white
 
 	lcd_set_address_window(0, 0, 240, 320);
-	lcd_fill(rgb_24b_to_16b(0x00AAFF), 240, 320);
-	lcd_write_command(0x00); // terminates the fill
+	lcd_fill(rgb_24b_to_16b(0xFFFFFF), 240, 320);
 
-	uint16_t x,y;
-	int radius = 4;
-	int dia = radius * 2;
+	lcd_draw_line_h(105, 220, 103, rgb_24b_to_16b(0xFF0000), 4);
+	lcd_draw_line_v(202, 50, 175, rgb_24b_to_16b(0x0000FF), 4);
 
-	// lcd_touch_debug_coords();
+	Point p0, p1;
+	p0.x = 100;
+	p0.y = 100;
 
-	while (1) {
-		bool isTouched = lcd_touch_read_coords(
-			ILI9341_TFTWIDTH,
-			ILI9341_TFTHEIGHT,
-			&x,
-			&y,
-			true
-		);
+	lcd_draw_pixel(p0, rgb_24b_to_16b(0x00FF00), 10);
 
-		delay_milli(5);
+	p0.x = 200;
+	p0.y = 250;
+	
+	lcd_draw_pixel(p0, rgb_24b_to_16b(0x00FF00), 10);
 
-		// uart_write("is touch: ");
+	p0.x = 105;
+	p0.y = 105;
+	p1.x = 200;
+	p1.y = 150;
 
-		// char buf[16];
-		// num2char(isTouched, buf, 16);
+	lcd_draw_rect(p0, p1, rgb_24b_to_16b(0xFFAA00), 4);
 
-		// uart_write_line(buf);
+	p0.x = 30;
+	p0.y = 30;
+	p1.x = 95;
+	p1.y = 95;
 
-		if (!isTouched) continue;
+	lcd_draw_rect_filled(p0, p1, rgb_24b_to_16b(0x00AAFF));
 
-		char buf_x[16];
-		num2char(x, buf_x, 16);
+	p0.x = 30;
+	p0.y = 30;
+	p1.x = 195;
+	p1.y = 245;
 
-		char buf_y[16];
-		num2char(y, buf_y, 16);
-		
-		uart_write("X: ");
-		uart_write(buf_x);
-		uart_write("; Y: ");
-		uart_write_line(buf_y);
-
-		lcd_select();
-
-		lcd_set_address_window(x - radius, y - radius, dia, dia);
-		lcd_fill(rgb_24b_to_16b(0xFF0000), dia, dia);
-		lcd_write_command(0x00);
-		delay_milli(5);
-	}
+	lcd_draw_line(p0, p1, rgb_24b_to_16b(0xAA00FF), 4);
 
 	return 0;
 }

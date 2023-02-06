@@ -28,7 +28,7 @@ void lcd_power_on();
 /// @brief Sets the power settings when initializing
 void lcd_set_settings();
 
-/// @brief Fully initializes the display
+/// @brief Fully initializes the display. The display must be selected with lcd_select() after initialization.
 void lcd_init();
 
 #endif
