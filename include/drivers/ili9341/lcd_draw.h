@@ -1,3 +1,6 @@
+/// @file lcd_draw.h
+/// @brief LCD drawing utilities
+
 #ifndef __LCD_DRAW_H
 #define __LCD_DRAW_H
 

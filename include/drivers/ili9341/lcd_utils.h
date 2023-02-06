@@ -1,3 +1,6 @@
+/// @file lcd_utils.h
+/// @brief Miscellaneous LCD utility functions
+
 #ifndef __LCD_UTILS_H
 #define __LCD_UTILS_H
 

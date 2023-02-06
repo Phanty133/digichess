@@ -1,3 +1,6 @@
+/// @file sys_defines.h
+/// @brief System constants
+
 #ifndef __SYS_DEFINES_H
 #define __SYS_DEFINES_H
 

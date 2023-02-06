@@ -251,7 +251,7 @@ void lcd_touch_debug_raw() {
 		uart_write("; Z: ");
 		uart_write_line(buf_z);
 
-		// delay_milli(100);
+		delay_milli(100);
 	}
 }
 

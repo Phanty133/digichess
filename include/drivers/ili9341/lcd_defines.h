@@ -1,3 +1,6 @@
+/// @file lcd_defines.h
+/// @brief LCD constants
+
 #ifndef __LCD_DEFINES_H
 #define __LCD_DEFINES_H
 

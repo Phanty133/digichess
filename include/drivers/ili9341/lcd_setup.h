@@ -1,3 +1,6 @@
+/// @file lcd_setup.h
+/// @brief LCD setup functions - pin configuration and power up
+
 #ifndef __LCD_SETUP_H
 #define __LCD_SETUP_H
 

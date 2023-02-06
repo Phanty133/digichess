@@ -1,3 +1,6 @@
+/// @file bitops.h
+/// @brief Utilities for bit operations
+
 #ifndef __BITOPS_H
 #define __BITOPS_H
 

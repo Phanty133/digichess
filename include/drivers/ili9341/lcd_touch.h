@@ -1,3 +1,6 @@
+/// @file lcd_touch.h
+/// @brief LCD Touchscreen functions and constants
+
 #ifndef __LCD_TOUCH_H
 #define __LCD_TOUCH_H
 
@@ -37,11 +40,14 @@ void lcd_touch_init();
 /// @brief Reset the pin I/O for use with the LCD
 void lcd_touch_reset_pins();
 
-
+/// @brief Read the raw X axis output
+/// @param outX Address to write the X value to
+/// @return True if the X axis has a non-ambiguous value
 bool lcd_touch_read_x(uint16_t* outX);
 
 /// @brief Read the raw Y axis output
-/// @return Raw Y output
+/// @param outY Address to write the Y value to
+/// @return True if the Y axis has a non-ambiguous value
 bool lcd_touch_read_y(uint16_t* outY);
 
 /// @brief Read the pressure applied. Kind of broken. Probably best if not used
@@ -49,7 +55,12 @@ bool lcd_touch_read_y(uint16_t* outY);
 uint16_t lcd_touch_read_pressure(uint16_t x_val);
 
 /// @brief Read the X and Y touch positions on the screen
-/// @return True if the screen is touched, False if not touched
+/// @param screenWidth Screen width in pixels
+/// @param screenHeight Screen height in pixels
+/// @param outX Address to write the X value to
+/// @param outY Address to write the Y value to
+/// @param resetPins If true, resets D0, D1, CS, and RS pins for use with the LCD
+/// @return True if the screen is touched, false if not touched
 bool lcd_touch_read_coords(
 	uint16_t screenWidth,
 	uint16_t screenHeight,

@@ -1,3 +1,6 @@
+/// @file lcd_controls.h
+/// @brief LCD control functions
+
 #ifndef __LCD_CONTROLS_H
 #define __LCD_CONTROLS_H
 
