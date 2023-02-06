@@ -21,7 +21,7 @@ static bool read_averaged_adc(uint16_t* val) {
 
 	uint16_t dSample = samples[0] - samples[1];
 
-	if (dSample < -4 || dSample > 4) {
+	if (dSample < -__TOUCH_SAMPLE_NOISE || dSample > __TOUCH_SAMPLE_NOISE) {
 		return false;
 	} else {
 		*val = (samples[0] + samples[1]) >> 1; // Average the two samples
@@ -34,7 +34,7 @@ static bool read_xm(uint16_t* val) {
 	return read_averaged_adc(val);
 }
 
-static bool read_yp(uint16_t* val) {
+bool read_yp(uint16_t* val) {
 	AD1CHS = (10 << 16);
 	return read_averaged_adc(val);
 }
@@ -44,75 +44,105 @@ void lcd_touch_init() {
 	// AD1PCFGCLR = __TOUCH_YP_MASK + __TOUCH_XM_MASK;
 
 	// ADC Setup
-
+	
 	AD1CON1CLR = (0x7 << 8); // Set FORM to 000, which is a 16-bit integer format
 	AD1CON1CLR = (1 << 2); // Clear ASAM, enable manual sampling
 	AD1CON1SET = (0x7 << 5); // Set autoconversion
 
 	AD1CON2 = 0x0;
-	AD1CON3SET = (0x1 << 15);
+	AD1CON3 |= (0x1 << 15);
+
+	AD1CHSCLR = (1 << 23) | (1 << 31); // Make sure neg inputs are GND
 
 	AD1CON1SET = (0x1 << 15); // turn on ADC	
 }
 
 void lcd_touch_reset_pins() {
-	uint16_t digitalPinMask = __TOUCH_YM_MASK + __TOUCH_XP_MASK;
+	uint16_t digitalPinMask = __TOUCH_YM_MASK | __TOUCH_XP_MASK;
 	TRISDCLR = digitalPinMask;
 	LATDCLR = digitalPinMask;
 
-	uint16_t analogPinMask = __TOUCH_YP_MASK + __TOUCH_XM_MASK;
+	uint16_t analogPinMask = __TOUCH_YP_MASK | __TOUCH_XM_MASK;
 	AD1PCFGSET = analogPinMask;
 	TRISBCLR = analogPinMask;
-	LATBCLR = analogPinMask;
+	LATBSET = analogPinMask;
 }
 
 bool lcd_touch_read_x(uint16_t* outX) {
-	// Set both Y pins as inputs
-	TRISDSET = __TOUCH_YM_MASK;
-	LATDCLR = __TOUCH_YM_MASK;
+	// Reading X
+	// Y+ : analog in
+	// Y- : high-Z
+	// X+ : VCC
+	// X- : GND
 
-	TRISBSET = __TOUCH_YP_MASK;
+	// Set up port D before port B to not risk sending a valid command
+	// with floating control pins
+
+	// Set port D pins (X+, Y-)
+	TRISD = (TRISD | __TOUCH_YM_MASK) & (~__TOUCH_XP_MASK);
+
+	// Pull X+ (D0) HIGH
+	// To avoid a situation where the bus is 0x01, which risks a software reset
+	// for god knows what reason, set the entire bus to 0xEF which is an
+	// undefined command. 0xEF instead of something like 0xFF because D4 
+	// is on a different port, so it's quicker to just set all port D pins
+	// Seriously. Fuck this display. Never buy shit from Velleman.
+	LATD |= __LCD_PORTD_MASK;
+
+	// Set port B pins (X-, Y+)
+	TRISB = (TRISB | __TOUCH_YP_MASK) & (~__TOUCH_XM_MASK);
 	AD1PCFGCLR = __TOUCH_YP_MASK;
-
-	// Set both X pins as outputs
-	AD1PCFGSET = __TOUCH_XM_MASK;
-	TRISBCLR = __TOUCH_XM_MASK;
-	TRISDCLR = __TOUCH_XP_MASK;
-
-	// Pull X+ HIGH
-	LATDSET = __TOUCH_XP_MASK;
 
 	// Pull X- LOW
 	LATBCLR = __TOUCH_XM_MASK;
 
-	delay_micro(20); // Let voltages settle
+	delay_micro(__TOUCH_READ_DELAY); // Let voltages settle
 
-	// Read and return Y+
-	return read_yp(outX);
+	bool valid = read_yp(outX);
+
+	// Reset port B immediately to minimize time for floating control pins
+	AD1PCFGSET = __TOUCH_YP_MASK;
+	lcd_init_portb();
+
+	return valid;
 }
 
 bool lcd_touch_read_y(uint16_t* outY) {
-	// Set both X pins as inputs
-	TRISDSET = __TOUCH_XP_MASK;
+	// Reading Y
+	// Y+ : VCC
+	// Y- : GND
+	// X+ : high-Z
+	// X- : analog in
 
-	TRISBSET = __TOUCH_XM_MASK;
+	// Set up port D before port B to not risk sending a valid command
+	// with floating control pins
+
+	// Set port D pins (X+, Y-)
+	TRISD = (TRISD | __TOUCH_XP_MASK) & (~__TOUCH_YM_MASK);
+
+	// Pull Y- (D1) LOW
+	// For the reasons outlined in lcd_touch_read_x(), it's better to set the
+	// entire data bus to make sure we don't accidentally give the cursed display
+	// a valid command.
+	// LATDSET = __LCD_PORTD_MASK;
+	// LATDCLR = __TOUCH_YM_MASK;
+	LATD = (LATD | __LCD_PORTD_MASK) & (~(__LCD_D1_MASK));
+
+	// Set port B pins (X-, Y+)
+	TRISB = (TRISB | __TOUCH_XM_MASK) & (~__TOUCH_YP_MASK);
 	AD1PCFGCLR = __TOUCH_XM_MASK;
-
-	// Set both Y pins as outputs
-	AD1PCFGSET = __TOUCH_YP_MASK;
-	TRISBCLR = __TOUCH_YP_MASK;
-	TRISDCLR = __TOUCH_YM_MASK;
 
 	// Pull Y+ HIGH
 	LATBSET = __TOUCH_YP_MASK;
-
-	// Pull Y- LOW
-	LATDCLR = __TOUCH_YM_MASK;
-
-	delay_micro(50); // Let voltages settle
+	
+	delay_micro(__TOUCH_READ_DELAY); // Let voltages settle
 
 	uint16_t outVal;
 	bool isValid = read_xm(&outVal);
+
+	// Reset port B immediately to minimize time for floating control pins
+	AD1PCFGSET = __TOUCH_XM_MASK;
+	lcd_init_portb();
 
 	if (!isValid) return false;
 
@@ -131,7 +161,7 @@ uint16_t lcd_touch_read_pressure(uint16_t x_val) {
 	TRISBSET = __TOUCH_XM_MASK + __TOUCH_YP_MASK;
 	AD1PCFGCLR = __TOUCH_XM_MASK + __TOUCH_YP_MASK;
 
-	delay_micro(50);
+	delay_micro(__TOUCH_READ_DELAY);
 
 	uint16_t z1, z2;
 
@@ -190,6 +220,7 @@ bool lcd_touch_read_coords(
 	*outY = ((y - __TOUCH_Y_MIN) * screenHeight) / __TOUCH_Y_DELTA;
 
 	if (resetPins) lcd_touch_reset_pins();
+
 	return true;
 }
 
@@ -220,7 +251,7 @@ void lcd_touch_debug_raw() {
 		uart_write("; Z: ");
 		uart_write_line(buf_z);
 
-		delay_milli(100);
+		// delay_milli(100);
 	}
 }
 

@@ -5,6 +5,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include "bitops.h"
+#include "delay.h"
 #include "drivers/ili9341/lcd_defines.h"
 
 // 8080 MCU 8-bit bus interface Ⅱ

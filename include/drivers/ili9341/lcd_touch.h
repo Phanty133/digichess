@@ -5,6 +5,8 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include "drivers/ili9341/lcd_defines.h"
+#include "drivers/ili9341/lcd_comms.h"
+#include "drivers/ili9341/lcd_setup.h"
 #include "uart.h"
 
 // Y+ - LCD_CS - A3 - Analog input
@@ -12,19 +14,21 @@
 // X+ - LCD_D0 - Digital output
 // X- - LCD_RS - A2 - Analog input
 
-#define __TOUCH_YP_MASK (1 << 10) // Port B
-#define __TOUCH_YM_MASK (1 << 3) // Port D
-#define __TOUCH_XP_MASK (1 << 10) // Port D
-#define __TOUCH_XM_MASK (1 << 8) // Port B
+#define __TOUCH_YP_MASK __LCD_CS_MASK // Port B
+#define __TOUCH_YM_MASK __LCD_D1_MASK // Port D
+#define __TOUCH_XP_MASK __LCD_D0_MASK // Port D
+#define __TOUCH_XM_MASK __LCD_DC_MASK // Port B
 
 #define __TOUCH_X_RESISTANCE (348) // Resistance between X- and X+
+#define __TOUCH_READ_DELAY 30 // microseconds
+#define __TOUCH_SAMPLE_NOISE 4
 
-#define __TOUCH_X_MIN (396)
+#define __TOUCH_X_MIN (405)
 #define __TOUCH_X_MAX (1010)
 #define __TOUCH_X_DELTA (__TOUCH_X_MAX - __TOUCH_X_MIN)
 
-#define __TOUCH_Y_MIN (320)
-#define __TOUCH_Y_MAX (930)
+#define __TOUCH_Y_MIN (325)
+#define __TOUCH_Y_MAX (915)
 #define __TOUCH_Y_DELTA (__TOUCH_Y_MAX - __TOUCH_Y_MIN)
 
 /// @brief Initializes the ADC for reading the touchscreen

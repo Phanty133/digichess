@@ -2,22 +2,24 @@
 
 void lcd_select() {
 	// CS - LOW
-	PORTBCLR = CS_MASK;
+	LATBCLR = __LCD_CS_MASK;
 }
 
 void lcd_deselect() {
 	// CS - HIGH
-	PORTBSET = CS_MASK;
+	LATBSET = __LCD_CS_MASK;
 }
 
 void lcd_hw_reset() {
-	PORTBCLR = RST_MASK;
-	PORTBSET = RST_MASK;
+	LATBCLR = __LCD_RST_MASK;
+	delay_milli(150);
+	LATBSET = __LCD_RST_MASK;
 	delay_milli(150);
 }
 
 void lcd_sw_reset() {
 	lcd_write_command(ILI9341_RESET);
+	delay_milli(100);
 }
 
 void lcd_sleep_on() {

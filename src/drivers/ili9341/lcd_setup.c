@@ -53,32 +53,27 @@ void lcd_init_pins() {
 	// Port F: 1111 1111 1111 1101
 	// Port B: 1110 1001 1110 1011
 
-	TRISD = 0xFFFF
-		- (1 << 10)
-		- (1 << 9)
-		- (1 << 8)
-		- (1 << 3)
-		- (1 << 2)
-		- (1 << 1)
-		- 1;
+	lcd_init_portd();
+	lcd_init_portf();
+	lcd_init_portb();
+}
 
-	TRISF = 0xFFF
-		- (1 << 1);
-	
-	TRISB = 0xFFFF
-		- (1 << 12)
-		- (1 << 10)
-		- (1 << 8)
-		- (1 << 4)
-		- (1 << 2);
+void lcd_init_portd() {
+	TRISDCLR = __LCD_PORTD_MASK;
+	LATDCLR = __LCD_PORTD_MASK;
+}
 
-	// Reset outputs
+void lcd_init_portb() {
+	TRISBCLR = __LCD_PORTB_MASK;
+	uint16_t setHighMask = __LCD_RST_MASK | __LCD_CS_MASK | __LCD_RD_MASK;
 
-	LATDCLR = 0xFFFF;
-	LATFCLR = 0xFFFF;
-	LATBCLR = 0xFFFF;
+	LATBCLR = __LCD_PORTB_MASK & (~setHighMask);
+	LATBSET = setHighMask;
+}
 
-	LATBSET = CS_MASK + RST_MASK;
+void lcd_init_portf() {
+	TRISFCLR = __LCD_PORTF_MASK;
+	LATFCLR = __LCD_PORTF_MASK;
 }
 
 void lcd_set_settings() {

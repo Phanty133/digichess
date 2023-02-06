@@ -1,5 +1,7 @@
 #include "drivers/ili9341/lcd_draw.h"
 
+#include "uart.h"
+
 void lcd_set_address_window(uint16_t x0, uint16_t y0, uint16_t w, uint16_t h) {
 	uint16_t x1 = (x0 + w - 1);
 	uint16_t y1 = (y0 + h - 1);
@@ -27,7 +29,7 @@ void lcd_set_address_window(uint16_t x0, uint16_t y0, uint16_t w, uint16_t h) {
 
 void lcd_fill(uint16_t color, uint16_t w, uint16_t h) {
 	lcd_write_command(ILI9341_RAMWR);
-	PORTBSET = DC_MASK + RD_MASK;
+	LATBSET = __LCD_DC_MASK;
 
 	uint8_t col_msb = color >> 8;
 	uint8_t col_lsb = color;
