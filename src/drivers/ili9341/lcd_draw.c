@@ -253,3 +253,282 @@ void lcd_draw_line(
 		}
 	}
 }
+
+void lcd_draw_circle(
+	Point p,
+	uint16_t r,
+	uint16_t color,
+	uint16_t thickness
+) {
+	// Implements circle drawing with the mid-point circle drawing algorithm
+
+	r -= (thickness >> 1); // Adjust for thickness
+
+	int x = r;
+	int y = 0;
+	int P = 1 - r;
+
+	while (x > y) {
+		y++;
+
+		if (P <= 0) {
+			P += (y << 1) + 1;
+		} else {
+			x--;
+			P += ((y - x) << 1) + 1;
+		}
+
+		if (x < y) break;
+
+		// Draw octant and reflections
+
+		Point cP;
+		cP.x = p.x + x;
+		cP.y = p.y + y;
+		lcd_draw_pixel(cP, color, thickness);
+
+		cP.x = p.x - x;
+		cP.y = p.y + y;
+		lcd_draw_pixel(cP, color, thickness);
+
+		cP.x = p.x + x;
+		cP.y = p.y - y;
+		lcd_draw_pixel(cP, color, thickness);
+
+		cP.x = p.x - x;
+		cP.y = p.y - y;
+		lcd_draw_pixel(cP, color, thickness);
+
+		if (x == y) continue;
+
+		cP.y = p.y + x;
+		cP.x = p.x + y;
+		lcd_draw_pixel(cP, color, thickness);
+
+		cP.y = p.y - x;
+		cP.x = p.x + y;
+		lcd_draw_pixel(cP, color, thickness);
+
+		cP.y = p.y + x;
+		cP.x = p.x - y;
+		lcd_draw_pixel(cP, color, thickness);
+
+		cP.y = p.y - x;
+		cP.x = p.x - y;
+		lcd_draw_pixel(cP, color, thickness);
+	}
+}
+
+void lcd_draw_circle_filled(
+	Point p,
+	uint16_t r,
+	uint16_t color
+) {
+	// Implements circle drawing with a modified mid-point circle drawing algorithm
+	// Instead of drawing points on an octant and reflecting,
+	// I draw horizontal lines from the -x to x points (Reflected around the y axis)
+	int x = r;
+	int y = 0;
+	int P = 1 - r;
+
+	// Start by drawing a line from (-r, 0) to (r, 0)
+	lcd_draw_line_h(p.x - x, p.x + x, p.y, color, 1);
+
+	while (x > y) {
+		y++;
+
+		if (P <= 0) {
+			P += (y << 1) + 1;
+		} else {
+			x--;
+			P += ((y - x) << 1) + 1;
+		}
+
+		if (x < y) break;
+
+		// Draw octant and reflections
+
+		lcd_draw_line_h(p.x - x, p.x + x, p.y + y, color, 1);
+		lcd_draw_line_h(p.x - x, p.x + x, p.y - y, color, 1);
+
+		if (x == y) continue;
+
+		lcd_draw_line_h(p.x - y, p.x + y, p.y + x, color, 1);
+		lcd_draw_line_h(p.x - y, p.x + y, p.y - x, color, 1);
+	}
+}
+
+static void lcd_draw_bezier_quadratic_segment(
+	uint16_t x0,
+	uint16_t y0,
+	uint16_t x1,
+	uint16_t y1,
+	uint16_t x2,
+	uint16_t y2,
+	uint16_t color,
+	uint16_t thickness
+) {
+	// Draws quadratic bezier curve segment with a modified bresenham's algorithm
+	// Sign of gradient must not change
+	// Based on http://members.chello.at/~easyfilter/bresenham.html
+
+	int sx = x2 - x1;
+	int sy = y2 - y1;
+
+	long xx = x0 - x1;
+	long yy = y0 - y1;
+	long xy;
+
+	long dx, dy, err;
+	long cur = xx * sy - yy * sx;
+
+	if (sx * (long)sx + sy * (long)sy > xx * xx + yy * yy) {
+		x2 = x0;
+		x0 = sx + x1;
+
+		y2 = y0;
+		y0 = sy + y1;
+
+		cur = -cur;
+	}
+
+	if (cur != 0) {
+		xx += sx;
+		sx = x0 < x2 ? 1 : -1;
+		xx *= sx;
+
+		yy += sy;
+		sy = y0 < y2 ? 1 : -1;
+		yy *= sy;
+
+		xy = (xx * yy) << 1;
+		xx *= xx;
+		yy *= yy;
+
+		if (cur * sx * sy < 0) {
+			xx = -xx;
+			yy = -yy;
+			xy = -xy;
+			cur = -cur;
+		}
+
+		dx = 4 * sy * cur * (x1 - x0) + xx - xy;
+		dy = 4 * sx * cur * (y0 - y1) + yy - xy;
+		
+		xx += xx;
+		yy += yy;
+		err = dx + dy + xy;
+
+		do {
+			Point p;
+			p.x = x0;
+			p.y = y0;
+			lcd_draw_pixel(p, color, thickness);
+
+			if (x0 == x2 && y0 == y2) return;
+
+			float dblErr = (err << 1);
+			y1 = dblErr < dx;
+
+			if (dblErr > dy) {
+				x0 += sx;
+				dx -= xy;
+				err += dy += yy;	
+			}
+
+			if (y1) {
+				y0 += sy;
+				dy -= xy;
+				err += dx += xx;
+			}
+		} while (dy < dx);
+	}
+
+	Point lineP0;
+	lineP0.x = x0;
+	lineP0.y = y0;
+
+	Point lineP1;
+	lineP1.x = x2;
+	lineP1.y = y2;
+
+	lcd_draw_line(lineP0, lineP1, color, thickness);
+}
+
+void lcd_draw_bezier_quadratic(
+	Point p0,
+	Point p1,
+	Point p2,
+	uint16_t color,
+	uint16_t thickness
+) {
+	// Draws quadratic bezier curve segment with a modified Bresenham's algorithm
+	// Based on http://members.chello.at/~easyfilter/bresenham.html
+	// The code is an incomprehensible mess, but it's miles ahead of what was given
+	// on the website.
+
+	// Adjust for thickness
+	uint16_t halfThickness = thickness >> 1;
+
+	uint16_t x0 = p0.x + halfThickness;
+	uint16_t y0 = p0.y + halfThickness;
+	uint16_t x1 = p1.x;
+	uint16_t y1 = p1.y;
+	uint16_t x2 = p2.x - halfThickness;
+	uint16_t y2 = p2.y - halfThickness;
+
+	int x = x0 - x1;
+	int y = y0 - y1;
+
+	float t = x0 - (x1 << 1) + x2;
+	float r;
+
+	if ((long)x * (x2 - x1) > 0) {
+		if ((long)y * (y2 - y1) > 0) {
+			if (absf((y0 - (y1 << 1) + y2) / t * x) > abs(y)) {
+				x0 = x2;
+				x2 = x + x1;
+				y0 = y2;
+				y2 = y + y1;
+			}
+		}
+
+		t = (x0 - x1) / t;
+		r = (1 - t) * ((1 - t) * y0 + 2 * t * y1) + t * t * y2;
+		t = (x0 * x2 - x1 * x1) * t / (x0 - x1);
+
+		x = floor(t + 0.5);
+		y = floor(r + 0.5);
+
+		r = (y1 - y0) * (t - x0) / (x1 - x0) + y0;
+
+		lcd_draw_bezier_quadratic_segment(x0, y0, x, floor(r + 0.5), x, y, color, thickness);
+
+		r = (y1 - y2) * (t - x2) / (x1 - x2) + y2;
+		x0 = x1 = x;
+		y0 = y;
+		y1 = floor(r + 0.5);
+	}
+
+	if ((long)(y0 - y1) * (y2 - y1) > 0) {
+		t = y0 - (y1 << 1) + y2;
+		t = (y0 - y1) / t;
+
+		r = (1 - t) * ((1 - t) * x0 + 2.0 * t * x1) + t * t * x2;
+		t = (y0 * y2 - y1 * y1) * t / (y0 - y1);
+
+		x = floor(r + 0.5);
+		y = floor(t + 0.5);
+
+		r = (x1 - x0) * (t - y0) / (y1 - y0) + x0;
+
+		lcd_draw_bezier_quadratic_segment(x0, y0, floor(r + 0.5), y, x, y, color, thickness);
+
+		r = (x1 - x2) * (t - y2) / (y1 - y2) + x2;
+		x0 = x;
+		x1 = floor(r + 0.5);
+		y0 = y1 = y;
+	}
+
+	lcd_draw_bezier_quadratic_segment(x0, y0, x1, y1, x2, y2, color, thickness);
+}

@@ -20,7 +20,7 @@ int main(void) {
 	lcd_draw_line_h(105, 220, 103, rgb_24b_to_16b(0xFF0000), 4);
 	lcd_draw_line_v(202, 50, 175, rgb_24b_to_16b(0x0000FF), 4);
 
-	Point p0, p1;
+	Point p0, p1, p2;
 	p0.x = 100;
 	p0.y = 100;
 
@@ -51,6 +51,32 @@ int main(void) {
 	p1.y = 245;
 
 	lcd_draw_line(p0, p1, rgb_24b_to_16b(0xAA00FF), 4);
+
+	p0.x = 0;
+	p0.y = 169;
+	p1.x = 100;
+	p1.y = 169;
+
+	lcd_draw_line(p0, p1, rgb_24b_to_16b(0x0000FF), 1);
+
+	p0.x = 50;
+	p0.y = 200;
+
+	lcd_draw_circle(p0, 30, rgb_24b_to_16b(0xFF0000), 6);
+	lcd_draw_circle_filled(p0, 24, rgb_24b_to_16b(0x00AA00));
+
+	p0.x = 100;
+	p0.y = 30;
+	p1.x = 145;
+	p1.y = 15;
+	p2.x = 150;
+	p2.y = 50;
+
+	lcd_draw_pixel(p0, rgb_24b_to_16b(0x0000FF), 4);
+	lcd_draw_pixel(p1, rgb_24b_to_16b(0xFFAA00), 4);
+	lcd_draw_pixel(p2, rgb_24b_to_16b(0x0000FF), 4);
+
+	lcd_draw_bezier_quadratic(p0, p1, p2, rgb_24b_to_16b(0xFF0000), 4);
 
 	return 0;
 }

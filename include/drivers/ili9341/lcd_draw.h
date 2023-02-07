@@ -127,32 +127,6 @@ void lcd_draw_circle_filled(
 	uint16_t color
 );
 
-/// @brief Draws an elliptical outline
-/// @param p Center point
-/// @param a Horizontal distance
-/// @param b Vertical distance
-/// @param color Color in 5-6-5 RGB format
-/// @param thickness Outline thickness in pixels
-void lcd_draw_ellipse(
-	Point p,
-	uint16_t a,
-	uint16_t b,
-	uint16_t color,
-	uint16_t thickness
-);
-
-/// @brief Draws a filled ellipse
-/// @param p Center point
-/// @param a Horizontal distance
-/// @param b Vertical distance
-/// @param color Color in 5-6-5 RGB format
-void lcd_draw_ellipse_filled(
-	Point p,
-	uint16_t a,
-	uint16_t b,
-	uint16_t color
-);
-
 /// @brief Draws a quadratic bezier curve
 /// @param p0 Start point
 /// @param p1 Control point
