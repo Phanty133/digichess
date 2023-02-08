@@ -31,7 +31,9 @@
 	\item Local variables in \lstinline{lower_snake_case}
 	\item Function names in \lstinline{lower_snake_case}
 	\item Typedef struct names in \lstinline{PascalCase}
+	\item Struct members in \lstinline{lower_snake_case}
 	\item Don't use globals
+	\item For variables that depend on a physical unit, use a unit suffix, e.g. \lstinline{time_ms}
 \end{itemize}
 
 \section{Headers}
@@ -120,7 +122,7 @@
 	\begin{lstlisting}
 		// Bad
 		int foo(int a) {
-			if (a == 5) return a_long_and_complex_function_name_or_operation(a);
+			if (a == 5) return long_and_complex_function_or_operation(a);
 
 			return 0;
 		}
@@ -128,7 +130,7 @@
 		// Better
 		int foo(int a) {
 			if (a == 5) {
-				return a_long_and_complex_function_name_or_operation(a);
+				return long_and_complex_function_or_operation(a);
 			}
 
 			return 0;
