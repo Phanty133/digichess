@@ -11,6 +11,8 @@
 	backgroundcolor=\color[HTML]{EFEFEF},
 	keywordstyle={\bfseries \color{blue}},
 	commentstyle={\color{gray}},
+	framesep=10pt,
+	frame=single,
 	tabsize=4
 }
 
@@ -44,13 +46,13 @@
 	\item For domain-specific code, e.g. a driver, use a prefix for functions and types, e.g.
 	
 	\begin{lstlisting}
-		// Bad
-		Point a;
-		draw_pixel(a);
+// Bad
+Point a;
+draw_pixel(a);
 
-		// Good
-		LCD_Point a;
-		lcd_draw_pixel(a);
+// Good
+LCD_Point a;
+lcd_draw_pixel(a);
 	\end{lstlisting}
 \end{itemize}
 
@@ -74,18 +76,18 @@
 \begin{itemize}
 	\item Multiple same-type variable declarations in a single line are fine, but don't do single-line multi-variable assignments, e.g.
 	\begin{lstlisting}
-		int a, b, c; // Fine
-		int a = 1, b = 2, c = 3; // No
+int a, b, c; // Fine
+int a = 1, b = 2, c = 3; // No
 	\end{lstlisting}
 
 	\item Pointer asterisk next to type, e.g. \lstinline{int* ptr}
 	\item Don't do multi-variable single-line pointer assignments.
 	\begin{lstlisting}
-		int *a, *b; // Bad
+int *a, *b; // Bad
 
-		// Good
-		int* a;
-		int* b;
+// Good
+int* a;
+int* b;
 	\end{lstlisting}
 \end{itemize}
 
@@ -93,55 +95,55 @@
 
 \begin{itemize}
 	\item Spaces around keywords and same-line braces, e.g. \lstinline{if (condition) { }
-	\item New lines around blocks, e.g.
+	\item Empty lines around blocks, e.g.
 	\begin{lstlisting}
-		// Block 1
-		if (cond1) {
-			foo();
-		}
+// Block 1
+if (cond1) {
+	foo();
+}
 
-		// Block 2
-		if (cond2) {
-			bar();
-		}
+// Block 2
+while (cond2) {
+	bar();
+}
 	\end{lstlisting}
 
 	\item Else and else if statements start on the same line as the brace, e.g.
 	\begin{lstlisting}
-		if (cond1) {
-			a();
-		} else if (cond2) {
-			b();
-		} else {
-			c();
-		}
+if (cond1) {
+	a();
+} else if (cond2) {
+	b();
+} else {
+	c();
+}
 	\end{lstlisting}
 
 	\item Single-line \lstinline{if} statements without braces are fine if they're kept short, e.g.
 	
 	\begin{lstlisting}
-		// Bad
-		int foo(int a) {
-			if (a == 5) return long_and_complex_function_or_operation(a);
+// Bad
+int foo(int a) {
+	if (a == 5) return long_and_complex_function_or_operation(a);
 
-			return 0;
-		}
+	return 0;
+}
 
-		// Better
-		int foo(int a) {
-			if (a == 5) {
-				return long_and_complex_function_or_operation(a);
-			}
+// Better
+int foo(int a) {
+	if (a == 5) {
+		return long_and_complex_function_or_operation(a);
+	}
 
-			return 0;
-		}
+	return 0;
+}
 
-		// Good
-		int bar(int a) {
-			if (a == 5) return 1;
+// Good
+int bar(int a) {
+	if (a == 5) return 1;
 
-			return 0;
-		}
+	return 0;
+}
 	\end{lstlisting}
 
 	\item In all other cases avoid single-line \lstinline{if} statement and split them into a new line with braces.
@@ -151,12 +153,12 @@
 \begin{itemize}
 	\item Use return guards when possible, e.g.
 	\begin{lstlisting}
-		void some_func(int a, int b) {
-			if (a == 0) return;
-			if (b == 5) return;
+void some_func(int a, int b) {
+	if (a == 0) return;
+	if (b == 5) return;
 
-			return a + b;
-		}
+	return a + b;
+}
 	\end{lstlisting}
 
 	\item For the love of god don't use \lstinline{goto}
@@ -170,18 +172,18 @@
 	\item Always use parentheses around bitwise operations, e.g. \lstinline{2 + (5 << 3)}
 	\item If splitting a long chain of operators into multiple lines, put the operator the line is split around in the new line, e.g.
 	\begin{lstlisting}
-		if (
-			arg1
-			|| arg2
-			|| arg3
-		) {
-			int value =
-				123
-				+ 456
-				+ 789;
+if (
+	arg1
+	|| arg2
+	|| arg3
+) {
+	int value =
+		123
+		+ 456
+		+ 789;
 
-			stuff();
-		}
+	stuff();
+}
 	\end{lstlisting}
 \end{itemize}
 
