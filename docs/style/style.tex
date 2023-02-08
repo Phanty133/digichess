@@ -1,0 +1,193 @@
+\documentclass{article}
+\usepackage[a4paper]{geometry}
+\usepackage{listings}
+\usepackage{xcolor}
+
+\title{Digichess C code style guide}
+\author{Big Chungus}
+
+\lstset{
+	language=C,
+	backgroundcolor=\color[HTML]{EFEFEF},
+	keywordstyle={\bfseries \color{blue}},
+	commentstyle={\color{gray}},
+	tabsize=4
+}
+
+\begin{document}
+\maketitle
+
+\section{Indentation}
+
+\begin{itemize}
+	\item Use tabs or else.
+	\item Indent cases in switch statements
+\end{itemize}
+
+\section{Naming}
+
+\begin{itemize}
+	\item Constants in \lstinline{UPPER_SNAKE_CASE}
+	\item Local variables in \lstinline{lower_snake_case}
+	\item Function names in \lstinline{lower_snake_case}
+	\item Typedef struct names in \lstinline{PascalCase}
+	\item Don't use globals
+\end{itemize}
+
+\section{Headers}
+
+\begin{itemize}
+	\item Header file names are of the format \lstinline{lower_snake_case.h}
+	\item Include guard macros of the format \lstinline{__UPPER_SNAKE_CASE_H}
+	\item For domain-specific code, e.g. a driver, use a prefix for functions and types, e.g.
+	
+	\begin{lstlisting}
+		// Bad
+		Point a;
+		draw_pixel(a);
+
+		// Good
+		LCD_Point a;
+		lcd_draw_pixel(a);
+	\end{lstlisting}
+\end{itemize}
+
+\section{Comments}
+
+\begin{itemize}
+	\item Space at the start of a comment, e.g. \lstinline{// Comment here}
+	\item Every line in a multiline comment starts with a \lstinline{//}
+	\item Doxygen comments use a triple slash, e.g. \lstinline{/// @doxygenhere}
+\end{itemize}
+
+\section{Macros}
+
+\begin{itemize}
+	\item Always use parentheses around values, e.g. \lstinline{#define CONST_NAME (VALUE)}
+	\item If it's a macro used in a limited scope, e.g. just for specific driver header files, use a double underscore, e.g. \lstinline{#define __PRIVATE_MACRO_NAME} 
+\end{itemize}
+
+\section{Variables}
+
+\begin{itemize}
+	\item Multiple same-type variable declarations in a single line are fine, but don't do single-line multi-variable assignments, e.g.
+	\begin{lstlisting}
+		int a, b, c; // Fine
+		int a = 1, b = 2, c = 3; // No
+	\end{lstlisting}
+
+	\item Pointer asterisk next to type, e.g. \lstinline{int* ptr}
+	\item Don't do multi-variable single-line pointer assignments.
+	\begin{lstlisting}
+		int *a, *b; // Bad
+
+		// Good
+		int* a;
+		int* b;
+	\end{lstlisting}
+\end{itemize}
+
+\section{Flow control}
+
+\begin{itemize}
+	\item Spaces around keywords and same-line braces, e.g. \lstinline{if (condition) { }
+	\item New lines around blocks, e.g.
+	\begin{lstlisting}
+		// Block 1
+		if (cond1) {
+			foo();
+		}
+
+		// Block 2
+		if (cond2) {
+			bar();
+		}
+	\end{lstlisting}
+
+	\item Else and else if statements start on the same line as the brace, e.g.
+	\begin{lstlisting}
+		if (cond1) {
+			a();
+		} else if (cond2) {
+			b();
+		} else {
+			c();
+		}
+	\end{lstlisting}
+
+	\item Single-line \lstinline{if} statements without braces are fine if they're kept short, e.g.
+	
+	\begin{lstlisting}
+		// Bad
+		int foo(int a) {
+			if (a == 5) return a_long_and_complex_function_name_or_operation(a);
+
+			return 0;
+		}
+
+		// Better
+		int foo(int a) {
+			if (a == 5) {
+				return a_long_and_complex_function_name_or_operation(a);
+			}
+
+			return 0;
+		}
+
+		// Good
+		int bar(int a) {
+			if (a == 5) return 1;
+
+			return 0;
+		}
+	\end{lstlisting}
+
+	\item In all other cases avoid single-line \lstinline{if} statement and split them into a new line with braces.
+\end{itemize}
+
+\section{Functions}
+\begin{itemize}
+	\item Use return guards when possible, e.g.
+	\begin{lstlisting}
+		void some_func(int a, int b) {
+			if (a == 0) return;
+			if (b == 5) return;
+
+			return a + b;
+		}
+	\end{lstlisting}
+
+	\item For the love of god don't use \lstinline{goto}
+	\item Wrap short inline assembly in their own functions. Longer assembly should go into .S files.
+\end{itemize}
+
+\section{Operators}
+
+\begin{itemize}
+	\item Spaces around operators, e.g. \lstinline{5 + 3}
+	\item Always use parentheses around bitwise operations, e.g. \lstinline{2 + (5 << 3)}
+	\item If splitting a long chain of operators into multiple lines, put the operator the line is split around in the new line, e.g.
+	\begin{lstlisting}
+		if (
+			arg1
+			|| arg2
+			|| arg3
+		) {
+			int value =
+				123
+				+ 456
+				+ 789;
+
+			stuff();
+		}
+	\end{lstlisting}
+\end{itemize}
+
+\section{Misc}
+
+\begin{itemize}
+	\item Try to keep the line width under 80 characters
+	\item For stuff that's not listed, use your best judgement
+\end{itemize}
+
+\end{document}
