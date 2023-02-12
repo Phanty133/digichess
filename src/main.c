@@ -4,9 +4,23 @@
 #include "drivers/ili9341/lcd_draw.h"
 #include "drivers/ili9341/lcd_utils.h"
 #include "drivers/ili9341/lcd_touch.h"
+#include "drivers/ws2812b/ws2812b.h"
 #include <stdbool.h>
 
-int main(void) {
+
+int main(){
+	uint32_t leds[10];
+	int num_leds = 10;
+	led_init(leds, num_leds);
+	
+	while(true){
+		led_set(leds, 2, 0x00ff00);
+		led_set(leds, 3, 0xfff000);
+		led_display(leds, num_leds);
+	}
+}
+
+int mains(void) {
 	uart_begin(115200);
 
 	lcd_init();
