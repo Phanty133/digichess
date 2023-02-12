@@ -54,7 +54,8 @@ bool lcd_touch_read_y(uint16_t* outY);
 /// @return Raw pressure applied
 uint16_t lcd_touch_read_pressure(uint16_t x_val);
 
-/// @brief Read the X and Y touch positions on the screen. The display must be selected with lcd_select() after reading
+/// @brief Read the X and Y touch positions on the screen.
+/// @brief The display must be selected with lcd_select() after read
 /// @param screenWidth Screen width in pixels
 /// @param screenHeight Screen height in pixels
 /// @param outX Address to write the X value to
