@@ -2,7 +2,7 @@
 # a bit of a mess but ¯\_(ツ)_/¯
 
 # PIC32 device number
-DEVICE		= 32MX320F128H
+DEVICE		= 32MX340F512H
 
 # UART settings for programmer
 TTYDEV		?=/dev/ttyUSB0

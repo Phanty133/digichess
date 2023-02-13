@@ -532,3 +532,32 @@ void lcd_draw_bezier_quadratic(
 
 	lcd_draw_bezier_quadratic_segment(x0, y0, x1, y1, x2, y2, color, thickness);
 }
+
+void lcd_draw_bitmap1(
+	Bitmap8* bitmap,
+	Point p0,
+	uint16_t color_fg,
+	uint16_t color_bg
+) {
+	lcd_set_address_window(p0.x, p0.y, bitmap->width, bitmap->height);
+
+	lcd_write_command(ILI9341_RAMWR);
+	LATBSET = __LCD_DC_MASK;
+
+	for (uint16_t y = 0; y < bitmap->height; y++) {
+		for (uint16_t x = 0; x < bitmap->width; x++) {
+			uint16_t color = bitmap_get_pixel(bitmap, x, y) ? color_fg : color_bg;
+			
+			uint8_t col_msb = color >> 8;
+			uint8_t col_lsb = color;
+
+			lcd_set_bus_data(col_msb);
+			lcd_write_strobe();
+
+			lcd_set_bus_data(col_lsb);
+			lcd_write_strobe();
+		}
+	}
+
+	lcd_write_command(0x00); // Terminate the fill
+}

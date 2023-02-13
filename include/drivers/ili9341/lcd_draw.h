@@ -10,6 +10,7 @@
 #include "drivers/ili9341/lcd_defines.h"
 #include "drivers/ili9341/lcd_comms.h"
 #include "drivers/ili9341/lcd_utils.h"
+#include "bitmap.h"
 
 typedef struct {
 	uint16_t x;
@@ -139,6 +140,18 @@ void lcd_draw_bezier_quadratic(
 	Point p2,
 	uint16_t color,
 	uint16_t thickness
+);
+
+/// @brief Draws a 1bit bitmap
+/// @param bitmap Pointer to the bitmap
+/// @param p0 Top-left bitmap offset
+/// @param color_fg Color in 5-6-5 RGB format. Color for pixels with value 1
+/// @param color_bg Color in 5-6-5 RGB format. Color for pixels with value 0
+void lcd_draw_bitmap1(
+	Bitmap8* bitmap,
+	Point p0,
+	uint16_t color_fg,
+	uint16_t color_bg
 );
 
 #endif

@@ -6,6 +6,7 @@
 
 #define ILI9341_TFTWIDTH (240)  // ILI9341 max TFT width
 #define ILI9341_TFTHEIGHT (320) // ILI9341 max TFT height
+#define LCD_PPI (143)
 
 /*
 	Pin mask

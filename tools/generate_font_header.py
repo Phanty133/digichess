@@ -1,3 +1,8 @@
+"""
+	Generates a .ttf.h header file with a byte array that contains the bytes
+	of a .ttf file
+"""
+
 import sys
 import os
 
@@ -13,7 +18,7 @@ output_data = ""
 arr_name = input_name.replace(".ttf", "").upper()
 output_data += f"#ifndef __{arr_name}_TTF_H\n"
 output_data += f"#define __{arr_name}_TTF_H\n"
-output_data += f"const char {arr_name}[] = {{"
+output_data += f"static const char {arr_name}[] = {{"
 
 with open(input_path, "rb") as file:
 	file_data = file.read()

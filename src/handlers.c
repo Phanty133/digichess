@@ -4,8 +4,20 @@
 
  * For copyright and licensing, see file COPYING */
 
+#include <pic32mx.h>
+#include "uart.h"
+
 /* Non-Maskable Interrupt; something bad likely happened, so hang */
 void _nmi_handler() {
+	volatile int cause;
+	__asm__ volatile("mfc0 %0, $13" : "=r"(cause));
+
+	char buf[32];
+	num2char(cause, buf, 32);
+
+	uart_write("EXCEPTION CAUSE: ");
+	uart_write_line(buf);
+
 	for(;;);
 }
 

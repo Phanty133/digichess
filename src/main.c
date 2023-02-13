@@ -4,11 +4,27 @@
 #include "drivers/ili9341/lcd_draw.h"
 #include "drivers/ili9341/lcd_utils.h"
 #include "drivers/ili9341/lcd_touch.h"
+#include "drivers/ili9341/lcd_defines.h"
 #include "drivers/ws2812b/ws2812b.h"
+#include "fonts/ComicSansMS.ttf.h"
+#include "ttf/ttf_draw.h"
+#include "ttf/ttf_funcs.h"
+#include "bitmap.h"
 #include <stdbool.h>
 
+void led_test();
+void draw_test();
+void font_test();
 
-int main(){
+int main() {
+	uart_begin(115200);
+
+	font_test();
+
+	return 0;
+}
+
+void led_test(){
 	int num_leds = 7;
 	uint32_t leds[num_leds];
 	led_init(leds, num_leds);
@@ -30,9 +46,49 @@ int main(){
 	}
 }
 
-int mains(void) {
-	uart_begin(115200);
+void font_test() {
+	lcd_init();
+	lcd_select();
 
+	uint16_t fontsize = 24;
+	float scale = ttf_get_scale(COMICSANSMS, fontsize, LCD_PPI);
+
+	Bitmap8 bitmap;
+	bitmap.width = 300;
+	bitmap.height = 48;
+	
+	uint8_t bitmap_data[bitmap.width * bitmap.height];
+	bitmap.data = bitmap_data;
+	bitmap_clear(&bitmap);
+
+	ttf_draw_string(&bitmap, COMICSANSMS, "Hello world!", fontsize, LCD_PPI);
+
+	Bitmap8 bitmap90deg;
+	bitmap90deg.height = 300;
+	bitmap90deg.width = 48;
+
+	uint8_t bitmap90deg_data[bitmap90deg.width * bitmap90deg.height];
+	bitmap90deg.data = bitmap90deg_data;
+	bitmap_clear(&bitmap90deg);
+
+	bitmap_rotate90(&bitmap90deg, &bitmap);
+
+	Point p0, p1;
+	p0.x = 0;
+	p0.y = 0;
+
+	p1.x = 240;
+	p1.y = 320;
+
+	lcd_draw_rect_filled(p0, p1, 0xFFFF);
+
+	p0.x = 120;
+	p0.y = 10;
+
+	lcd_draw_bitmap1(&bitmap90deg, p0, 0x0000, 0xFFFF);
+}
+
+void lcd_test() {
 	lcd_init();
 	lcd_select();
 
@@ -101,6 +157,4 @@ int mains(void) {
 	lcd_draw_pixel(p2, rgb_24b_to_16b(0x0000FF), 4);
 
 	lcd_draw_bezier_quadratic(p0, p1, p2, rgb_24b_to_16b(0xFF0000), 4);
-
-	return 0;
 }
