@@ -9,14 +9,24 @@
 
 
 int main(){
-	uint32_t leds[10];
-	int num_leds = 10;
+	int num_leds = 7;
+	uint32_t leds[num_leds];
 	led_init(leds, num_leds);
-	
+	int counter = 0;
+
 	while(true){
-		led_set(leds, 2, 0x00ff00);
-		led_set(leds, 3, 0xfff000);
+		led_set(leds, counter, 0x0000FF);
+		
+		if (counter == 0) {
+			led_set(leds, num_leds - 1, 0);
+		} else {
+			led_set(leds, counter - 1, 0);
+		}
+
+		counter = (counter + 1) % num_leds;
 		led_display(leds, num_leds);
+
+		delay_milli(20);
 	}
 }
 

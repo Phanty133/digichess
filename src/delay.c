@@ -21,10 +21,3 @@ void delay_micro(uint32_t us) {
 
 	while(readCoreTimer() - startTimer < waitCnt);
 }
-
-void delay_100_nano(uint32_t ns){
-	uint32_t startTimer = readCoreTimer();
-	uint32_t waitCnt = ns * __SCALE_ns;
-
-	while(readCoreTimer() - startTimer < waitCnt);
-}

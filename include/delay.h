@@ -21,8 +21,4 @@ void delay_milli(uint32_t ms);
 /// @param us Delay time in microseconds
 void delay_micro(uint32_t us);
 
-/// @brief Stalls the processor for some amount of time
-/// @param ns Delay time in 100s of nanoseconds. 
-void delay_100_nano(uint32_t ns);
-
 #endif
