@@ -41,14 +41,14 @@ void lcd_touch_init();
 void lcd_touch_reset_pins();
 
 /// @brief Read the raw X axis output
-/// @param outX Address to write the X value to
+/// @param out_x Address to write the X value to
 /// @return True if the X axis has a non-ambiguous value
-bool lcd_touch_read_x(uint16_t* outX);
+bool lcd_touch_read_x(uint16_t* out_x);
 
 /// @brief Read the raw Y axis output
-/// @param outY Address to write the Y value to
+/// @param out_y Address to write the Y value to
 /// @return True if the Y axis has a non-ambiguous value
-bool lcd_touch_read_y(uint16_t* outY);
+bool lcd_touch_read_y(uint16_t* out_y);
 
 /// @brief Read the pressure applied. Kind of broken. Probably best if not used
 /// @return Raw pressure applied
@@ -56,18 +56,18 @@ uint16_t lcd_touch_read_pressure(uint16_t x_val);
 
 /// @brief Read the X and Y touch positions on the screen.
 /// @brief The display must be selected with lcd_select() after read
-/// @param screenWidth Screen width in pixels
-/// @param screenHeight Screen height in pixels
-/// @param outX Address to write the X value to
-/// @param outY Address to write the Y value to
-/// @param resetPins If true, resets D0, D1, CS, and RS pins for use with the LCD
+/// @param screen_width Screen width in pixels
+/// @param screen_height Screen height in pixels
+/// @param out_x Address to write the X value to
+/// @param out_y Address to write the Y value to
+/// @param reset_pins If true, resets D0, D1, CS, and RS pins for use with the LCD
 /// @return True if the screen is touched
 bool lcd_touch_read_coords(
-	uint16_t screenWidth,
-	uint16_t screenHeight,
-	uint16_t* outX,
-	uint16_t* outY,
-	bool resetPins
+	uint16_t screen_width,
+	uint16_t screen_height,
+	uint16_t* out_x,
+	uint16_t* out_y,
+	bool reset_pins
 );
 
 /// @brief Read and write the touchscreen's raw X and Y axis outputs to UART every 100ms

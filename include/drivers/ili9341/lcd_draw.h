@@ -12,10 +12,12 @@
 #include "drivers/ili9341/lcd_utils.h"
 #include "bitmap.h"
 
+/// @struct LCD_Point
+/// @brief A point on the LCD
 typedef struct {
 	uint16_t x;
 	uint16_t y;
-} Point;
+} LCD_Point;
 
 /// @brief Sets the addresses that get written to when drawing
 /// @param x0 Start X address
@@ -67,7 +69,7 @@ void lcd_draw_line_v(
 /// @param color Color in 5-6-5 RGB format
 /// @param thickness Square side length
 void lcd_draw_pixel(
-	Point p,
+	LCD_Point p,
 	uint16_t color,
 	uint16_t thickness
 );
@@ -78,8 +80,8 @@ void lcd_draw_pixel(
 /// @param color Color in 5-6-5 RGB format
 /// @param thickness Outline thickness
 void lcd_draw_rect(
-	Point p0,
-	Point p1,
+	LCD_Point p0,
+	LCD_Point p1,
 	uint16_t color,
 	uint16_t thickness
 );
@@ -89,8 +91,8 @@ void lcd_draw_rect(
 /// @param p1 Bottom-right point
 /// @param color Color in 5-6-5 RGB format
 void lcd_draw_rect_filled(
-	Point p0,
-	Point p1,
+	LCD_Point p0,
+	LCD_Point p1,
 	uint16_t color
 );
 
@@ -100,8 +102,8 @@ void lcd_draw_rect_filled(
 /// @param color Line color in 5-6-5 RGB format
 /// @param thickness Line thickness in pixels
 void lcd_draw_line(
-	Point p0,
-	Point p1,
+	LCD_Point p0,
+	LCD_Point p1,
 	uint16_t color,
 	uint16_t thickness
 );
@@ -112,7 +114,7 @@ void lcd_draw_line(
 /// @param color Color in 5-6-5 RGB format
 /// @param thickness Outline thickness in pixels
 void lcd_draw_circle(
-	Point p,
+	LCD_Point p,
 	uint16_t r,
 	uint16_t color,
 	uint16_t thickness
@@ -123,7 +125,7 @@ void lcd_draw_circle(
 /// @param r Radius
 /// @param color Color in 5-6-5 RGB format
 void lcd_draw_circle_filled(
-	Point p,
+	LCD_Point p,
 	uint16_t r,
 	uint16_t color
 );
@@ -135,9 +137,9 @@ void lcd_draw_circle_filled(
 /// @param color Color in 5-6-5 RGB format
 /// @param thickness Line thickness in pixels
 void lcd_draw_bezier_quadratic(
-	Point p0,
-	Point p1,
-	Point p2,
+	LCD_Point p0,
+	LCD_Point p1,
+	LCD_Point p2,
 	uint16_t color,
 	uint16_t thickness
 );
@@ -149,7 +151,7 @@ void lcd_draw_bezier_quadratic(
 /// @param color_bg Color in 5-6-5 RGB format. Color for pixels with value 0
 void lcd_draw_bitmap1(
 	Bitmap8* bitmap,
-	Point p0,
+	LCD_Point p0,
 	uint16_t color_fg,
 	uint16_t color_bg
 );

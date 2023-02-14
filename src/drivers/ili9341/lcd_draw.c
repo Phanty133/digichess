@@ -108,7 +108,7 @@ void lcd_draw_line_v(
 }
 
 void lcd_draw_pixel(
-	Point p,
+	LCD_Point p,
 	uint16_t color,
 	uint16_t thickness
 ) {
@@ -119,8 +119,8 @@ void lcd_draw_pixel(
 }
 
 void lcd_draw_rect(
-	Point p0,
-	Point p1,
+	LCD_Point p0,
+	LCD_Point p1,
 	uint16_t color,
 	uint16_t thickness
 ) {
@@ -142,8 +142,8 @@ void lcd_draw_rect(
 }
 
 void lcd_draw_rect_filled(
-	Point p0,
-	Point p1,
+	LCD_Point p0,
+	LCD_Point p1,
 	uint16_t color
 ) {
 	uint16_t w = p1.x - p0.x;
@@ -153,7 +153,7 @@ void lcd_draw_rect_filled(
 	lcd_fill(color, w, h);
 }
 
-static void lcd_draw_line_low(Point p0, Point p1, uint16_t color, uint16_t thickness) {
+static void lcd_draw_line_low(LCD_Point p0, LCD_Point p1, uint16_t color, uint16_t thickness) {
 	uint16_t dx = p1.x - p0.x;
 	uint16_t dy = p1.y - p0.y;
 	uint16_t yi = 1;
@@ -167,7 +167,7 @@ static void lcd_draw_line_low(Point p0, Point p1, uint16_t color, uint16_t thick
 	uint16_t y = p0.y;
 
 	for (uint16_t x = p0.x; x <= p1.x; x++) {
-		Point p;
+		LCD_Point p;
 		p.x = x;
 		p.y = y;
 
@@ -182,7 +182,7 @@ static void lcd_draw_line_low(Point p0, Point p1, uint16_t color, uint16_t thick
 	}
 }
 
-static void lcd_draw_line_high(Point p0, Point p1, uint16_t color, uint16_t thickness) {
+static void lcd_draw_line_high(LCD_Point p0, LCD_Point p1, uint16_t color, uint16_t thickness) {
 	uint16_t dx = p1.x - p0.x;
 	uint16_t dy = p1.y - p0.y;
 	uint16_t xi = 1;
@@ -196,7 +196,7 @@ static void lcd_draw_line_high(Point p0, Point p1, uint16_t color, uint16_t thic
 	uint16_t x = p0.x;
 
 	for (uint16_t y = p0.y; y <= p1.y; y++) {
-		Point p;
+		LCD_Point p;
 		p.x = x;
 		p.y = y;
 
@@ -212,8 +212,8 @@ static void lcd_draw_line_high(Point p0, Point p1, uint16_t color, uint16_t thic
 }
 
 void lcd_draw_line(
-	Point p0,
-	Point p1,
+	LCD_Point p0,
+	LCD_Point p1,
 	uint16_t color,
 	uint16_t thickness
 ) {
@@ -255,7 +255,7 @@ void lcd_draw_line(
 }
 
 void lcd_draw_circle(
-	Point p,
+	LCD_Point p,
 	uint16_t r,
 	uint16_t color,
 	uint16_t thickness
@@ -282,7 +282,7 @@ void lcd_draw_circle(
 
 		// Draw octant and reflections
 
-		Point cP;
+		LCD_Point cP;
 		cP.x = p.x + x;
 		cP.y = p.y + y;
 		lcd_draw_pixel(cP, color, thickness);
@@ -320,7 +320,7 @@ void lcd_draw_circle(
 }
 
 void lcd_draw_circle_filled(
-	Point p,
+	LCD_Point p,
 	uint16_t r,
 	uint16_t color
 ) {
@@ -420,7 +420,7 @@ static void lcd_draw_bezier_quadratic_segment(
 		err = dx + dy + xy;
 
 		do {
-			Point p;
+			LCD_Point p;
 			p.x = x0;
 			p.y = y0;
 			lcd_draw_pixel(p, color, thickness);
@@ -444,11 +444,11 @@ static void lcd_draw_bezier_quadratic_segment(
 		} while (dy < dx);
 	}
 
-	Point lineP0;
+	LCD_Point lineP0;
 	lineP0.x = x0;
 	lineP0.y = y0;
 
-	Point lineP1;
+	LCD_Point lineP1;
 	lineP1.x = x2;
 	lineP1.y = y2;
 
@@ -456,9 +456,9 @@ static void lcd_draw_bezier_quadratic_segment(
 }
 
 void lcd_draw_bezier_quadratic(
-	Point p0,
-	Point p1,
-	Point p2,
+	LCD_Point p0,
+	LCD_Point p1,
+	LCD_Point p2,
 	uint16_t color,
 	uint16_t thickness
 ) {
@@ -535,7 +535,7 @@ void lcd_draw_bezier_quadratic(
 
 void lcd_draw_bitmap1(
 	Bitmap8* bitmap,
-	Point p0,
+	LCD_Point p0,
 	uint16_t color_fg,
 	uint16_t color_bg
 ) {

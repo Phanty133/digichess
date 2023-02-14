@@ -73,7 +73,7 @@ void font_test() {
 
 	// bitmap_rotate90(&bitmap90deg, &bitmap);
 
-	Point p0, p1;
+	LCD_Point p0, p1;
 	p0.x = 0;
 	p0.y = 0;
 
@@ -100,7 +100,7 @@ void lcd_test() {
 	lcd_draw_line_h(105, 220, 103, rgb_24b_to_16b(0xFF0000), 4);
 	lcd_draw_line_v(202, 50, 175, rgb_24b_to_16b(0x0000FF), 4);
 
-	Point p0, p1, p2;
+	LCD_Point p0, p1, p2;
 	p0.x = 100;
 	p0.y = 100;
 

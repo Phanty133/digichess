@@ -31,8 +31,8 @@ void lcd_write_data(uint8_t data);
 /// @brief Writes a command and parameters to the LCD
 /// @param command Command byte
 /// @param data Data bytes
-/// @param dataSize Number of data bytes
-void lcd_write_register(uint8_t command, uint8_t* data, uint32_t dataSize);
+/// @param data_size Number of data bytes
+void lcd_write_register(uint8_t command, uint8_t* data, uint32_t data_size);
 
 /// @brief Pulses the RDX signal
 void lcd_read_strobe();
