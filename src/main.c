@@ -50,28 +50,28 @@ void font_test() {
 	lcd_init();
 	lcd_select();
 
-	uint16_t fontsize = 24;
+	uint16_t fontsize = 64;
 	float scale = ttf_get_scale(COMICSANSMS, fontsize, LCD_PPI);
 
 	Bitmap8 bitmap;
-	bitmap.width = 300;
-	bitmap.height = 48;
+	bitmap.width = 100;
+	bitmap.height = 120;
 	
 	uint8_t bitmap_data[bitmap.width * bitmap.height];
 	bitmap.data = bitmap_data;
 	bitmap_clear(&bitmap);
 
-	ttf_draw_string(&bitmap, COMICSANSMS, "Hello world!", fontsize, LCD_PPI);
+	ttf_draw_string(&bitmap, COMICSANSMS, "R", fontsize, LCD_PPI);
 
-	Bitmap8 bitmap90deg;
-	bitmap90deg.height = 300;
-	bitmap90deg.width = 48;
+	// Bitmap8 bitmap90deg;
+	// bitmap90deg.height = 300;
+	// bitmap90deg.width = 48;
 
-	uint8_t bitmap90deg_data[bitmap90deg.width * bitmap90deg.height];
-	bitmap90deg.data = bitmap90deg_data;
-	bitmap_clear(&bitmap90deg);
+	// uint8_t bitmap90deg_data[bitmap90deg.width * bitmap90deg.height];
+	// bitmap90deg.data = bitmap90deg_data;
+	// bitmap_clear(&bitmap90deg);
 
-	bitmap_rotate90(&bitmap90deg, &bitmap);
+	// bitmap_rotate90(&bitmap90deg, &bitmap);
 
 	Point p0, p1;
 	p0.x = 0;
@@ -82,10 +82,10 @@ void font_test() {
 
 	lcd_draw_rect_filled(p0, p1, 0xFFFF);
 
-	p0.x = 120;
+	p0.x = 10;
 	p0.y = 10;
 
-	lcd_draw_bitmap1(&bitmap90deg, p0, 0x0000, 0xFFFF);
+	lcd_draw_bitmap1(&bitmap, p0, rgb_24b_to_16b(0xFF0000), rgb_24b_to_16b(0x0000FF));
 }
 
 void lcd_test() {

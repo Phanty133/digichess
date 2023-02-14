@@ -18,7 +18,8 @@ output_data = ""
 arr_name = input_name.replace(".ttf", "").upper()
 output_data += f"#ifndef __{arr_name}_TTF_H\n"
 output_data += f"#define __{arr_name}_TTF_H\n"
-output_data += f"static const char {arr_name}[] = {{"
+output_data += f"#include <stdint.h>\n"
+output_data += f"static const uint8_t {arr_name}[] = {{"
 
 with open(input_path, "rb") as file:
 	file_data = file.read()

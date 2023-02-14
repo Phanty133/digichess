@@ -28,8 +28,8 @@ int ceil(float x) {
 }
 
 float sqrtf_16b(int16_t x) {
-	// Return NaN if x less than 0
-	if (x < 0) return 0.0f / 0.0f;
+	// Return NaN if x less than 0 or above the max value in the LUT
+	if (x < 0 || x > 32767) return 0.0f / 0.0f;
 
 	return SQRT_15BIT[x];
 }
