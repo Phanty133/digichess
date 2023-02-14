@@ -1,3 +1,6 @@
+/// @file memory.h
+/// @brief Simple memory manipulation functions
+
 #ifndef __MEMORY_H
 #define __MEMORY_H
 

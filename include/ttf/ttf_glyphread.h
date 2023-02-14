@@ -1,3 +1,6 @@
+/// @file ttf_glyphread.h
+/// @brief Functions for reading TFF glyph data
+
 #ifndef __TTF_GLYPHREAD_H
 #define __TTF_GLYPHREAD_H
 

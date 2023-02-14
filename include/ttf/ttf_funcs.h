@@ -1,3 +1,6 @@
+/// @file ttf_funcs.h
+/// @brief Functions for reading TTF data
+
 #ifndef __TTF_FUNCS_H
 #define __TTF_FUNCS_H
 

@@ -1,3 +1,6 @@
+/// @file ttf_scan.h
+/// @brief TTF Scan converter
+
 #ifndef __TTF_SCAN_H
 #define __TTF_SCAN_H
 

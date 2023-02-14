@@ -1,3 +1,6 @@
+/// @file math.h
+/// @brief Math functions
+
 #ifndef __MATH_H
 #define __MATH_H
 

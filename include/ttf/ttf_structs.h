@@ -1,3 +1,6 @@
+/// @file ttf_structs.h
+/// @brief TTF struct and constant definitions
+
 #ifndef __TTF_STRUCTS_H
 #define __TTF_STRUCTS_H
 
@@ -239,7 +242,7 @@ typedef struct {
 	int16_t advance_width; ///< The glyph's entire width, including spacing on both sides
 } TTF_CharDims;
 
-/// @struct TTF_Point
+/// @struct TTF_Point_
 /// @brief Glyph point data
 typedef struct TTF_Point_ {
 	int16_t x; ///< X coordinate in FUnits

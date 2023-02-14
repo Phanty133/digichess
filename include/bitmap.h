@@ -1,3 +1,6 @@
+/// @file bitmap.h
+/// @brief Simple bitmap implementation
+
 #ifndef __BITMAP_H
 #define __BITMAP_H
 

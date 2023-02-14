@@ -1,5 +1,5 @@
-/// @file ws2817b.h
-/// @brief driver for ws2812b LEDs
+/// @file ws2812b.h
+/// @brief Driver for ws2812b LEDs
 
 #ifndef __WS2812B_H
 #define __WS2812B_H

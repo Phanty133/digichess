@@ -1,3 +1,6 @@
+/// @file ttf_draw.h
+/// @brief End-user TTF drawing functions
+
 #ifndef __TTF_DRAW_H
 #define __TTF_DRAW_H
 
