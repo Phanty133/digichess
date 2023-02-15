@@ -81,8 +81,8 @@ static void flip_points(TTF_Point* points, uint16_t num_points, TTF_CharDims* di
 }
 
 void gen_char_fill(
-	void* pixel_fg(int16_t x, int16_t y, void* context),
-	void* pixel_bg(int16_t x, int16_t y, void* context),
+	void pixel_fg(int16_t x, int16_t y, void* context),
+	void pixel_bg(int16_t x, int16_t y, void* context),
 	void* callback_context,
 	const uint8_t* font,
 	char charcode,

@@ -29,14 +29,15 @@ void draw_char_fill(
 /// @brief Calculates a character's fill and sends the data to the respective callbacks
 /// @param pixel_fg Callback for a foreground pixel
 /// @param pixel_bg Callback for a background pixel
+/// @param callback_context A pointer that gets passed to the callbacks
 /// @param font Font's TTF data to use
 /// @param charcode Character to draw
 /// @param scale FUnit to pixel scaling factor (ttf_get_scale())
 /// @param bitmap_offset_x X offset in the bitmap
 /// @param bitmap_offset_y Y offset in the bitmap
 void gen_char_fill(
-	void* pixel_fg(int16_t x, int16_t y, void* context),
-	void* pixel_bg(int16_t x, int16_t y, void* context),
+	void pixel_fg(int16_t x, int16_t y, void* context),
+	void pixel_bg(int16_t x, int16_t y, void* context),
 	void* callback_context,
 	const uint8_t* font,
 	char charcode,

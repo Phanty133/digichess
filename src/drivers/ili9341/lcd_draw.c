@@ -630,6 +630,7 @@ void lcd_draw_text(
 
 	lcd_draw_rect_filled(p0, text_end, color_bg);
 
+#ifndef DISABLE_FONT_RENDERING
 	DrawCharContext draw_context;
 	draw_context.color_fg_msb = color_fg >> 8;
 	draw_context.color_fg_lsb = color_fg;
@@ -657,5 +658,6 @@ void lcd_draw_text(
 		x_offset += dims[i].advance_width;
 	}
 
-	lcd_write_command(0x00); // Terminate final memory write	
+	lcd_write_command(0x00); // Terminate final memory write
+#endif	
 }
