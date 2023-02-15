@@ -144,8 +144,8 @@ TTF_CharDims ttf_get_char_dims(const uint8_t* font, char charcode) {
 	spacing.width = spacing.max_x - spacing.x;
 	spacing.height = spacing.max_y - spacing.y;
 	spacing.lsb = get_int16_little(hmtx->lsb);
-	spacing.rsb = get_uint16_little(hmtx->advance_width) - spacing.lsb - spacing.width;
 	spacing.advance_width = get_uint16_little(hmtx->advance_width);
+	spacing.rsb = spacing.advance_width - spacing.lsb - spacing.width;
 
 	return spacing;
 }
@@ -161,11 +161,14 @@ TTF_CharDims ttf_get_char_dims_scaled(
 	dims.y *= scale;
 	dims.max_x *= scale;
 	dims.max_y *= scale;
-	dims.width *= scale;
-	dims.height *= scale;
 	dims.lsb *= scale;
-	dims.rsb *= scale;
 	dims.advance_width *= scale;
+
+	// Recalculate the derived quantites again otherwise they may not match up
+	// due to rounding errors
+	dims.width = dims.max_x - dims.x;
+	dims.height = dims.max_y - dims.y;
+	dims.rsb = dims.advance_width - dims.lsb - dims.width;
 
 	return dims;
 }

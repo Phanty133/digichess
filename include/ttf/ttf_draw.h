@@ -16,7 +16,7 @@
 /// @param charcode The character to generate
 /// @param font_size_pt Font size to generate, in pt
 /// @param display_ppi Display's pixel density in pixels per inch (dpi)
-void ttf_gen_char_bitmap(
+void ttf_draw_char_bitmap(
 	Bitmap8* bitmap,
 	const uint8_t* font,
 	char charcode,
@@ -49,7 +49,7 @@ void ttf_get_char_bitmap_cached(
 /// @param string String to write
 /// @param font_size_pt The font size to generate, in pt
 /// @param display_ppi Display's pixel density in pixels per inch (dpi)
-void ttf_draw_string(
+void ttf_draw_text(
 	Bitmap8* bitmap,
 	const uint8_t* font,
 	// TTF_Cache* cache,

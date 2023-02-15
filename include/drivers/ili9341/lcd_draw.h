@@ -11,6 +11,9 @@
 #include "drivers/ili9341/lcd_comms.h"
 #include "drivers/ili9341/lcd_utils.h"
 #include "bitmap.h"
+#include "ttf/ttf_scan.h"
+#include "ttf/ttf_structs.h"
+#include "ttf/ttf_funcs.h"
 
 /// @struct LCD_Point
 /// @brief A point on the LCD
@@ -151,6 +154,21 @@ void lcd_draw_bezier_quadratic(
 /// @param color_bg Color in 5-6-5 RGB format. Color for pixels with value 0
 void lcd_draw_bitmap1(
 	Bitmap8* bitmap,
+	LCD_Point p0,
+	uint16_t color_fg,
+	uint16_t color_bg
+);
+
+/// @brief Draws a text with the top-left corner at p0.
+/// @details Uses pixel data directly from the scan converter, bypassing the need for a bitmap, which reduces RAM usage
+/// @param text The text to draw
+/// @param p0 Top-left corner coordinates
+/// @param color_fg Foreground (Glyph) color
+/// @param color_bg Background color
+void lcd_draw_text(
+	const char* text,
+	const uint8_t* font,
+	uint16_t fontsize,
 	LCD_Point p0,
 	uint16_t color_fg,
 	uint16_t color_bg

@@ -27,7 +27,19 @@ void bitmap_clear(Bitmap8* bitmap);
 /// @param offset_y Y offset in destination
 void bitmap_combine(Bitmap8* dest, Bitmap8* src, uint32_t offset_x, uint32_t offset_y);
 
-uint8_t bitmap_get_pixel(Bitmap8* bitmap, uint16_t x, uint16_t y);
+/// @brief Gets the pixel at (x, y) on the bitmap
+/// @param bitmap Bitmap pointer to read from
+/// @param x X coordinate
+/// @param y Y coordinate
+/// @return Bitmap pixel value
+uint8_t bitmap8_get_pixel(Bitmap8* bitmap, uint16_t x, uint16_t y);
+
+/// @brief Sets the pixel at (x, y) on the bitmap to a value
+/// @param bitmap Bitmap pointer to read from
+/// @param x X coordinate
+/// @param y Y coordinate
+/// @param value Value to set the pixel to
+void bitmap8_set_pixel(Bitmap8* bitmap, uint16_t x, uint16_t y, uint8_t value);
 
 /// @brief Rotates the bitmap in src by 90 degrees clockwise and stores it in dest
 /// @param src Source

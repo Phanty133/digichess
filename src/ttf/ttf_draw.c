@@ -1,6 +1,6 @@
 #include "ttf/ttf_draw.h"
 
-void ttf_gen_char_bitmap(
+void ttf_draw_char_bitmap(
 	Bitmap8* bitmap,
 	const uint8_t* font,
 	char charcode,
@@ -13,7 +13,7 @@ void ttf_gen_char_bitmap(
 	bitmap_clear(bitmap);
 
 	if (charcode != ' ') {
-		gen_char_fill(bitmap, font, charcode, scale, 0, -dims.y);
+		draw_char_fill(bitmap, font, charcode, scale, 0, dims.y);
 	}
 }
 
@@ -37,7 +37,7 @@ void ttf_gen_char_bitmap(
 // 	return bitmap;
 // }
 
-void ttf_draw_string(
+void ttf_draw_text(
 	Bitmap8* bitmap,
 	const uint8_t* font,
 	// TTF_Cache* cache,
@@ -85,7 +85,7 @@ void ttf_draw_string(
 
 		bitmap_clear(&char_bitmap);
 		// Bitmap8 char_bitmap = ttf_get_char_bitmap_cached(font, cache, c, font_size_pt, display_ppi);
-		ttf_gen_char_bitmap(&char_bitmap, font, c, font_size_pt, display_ppi);
+		ttf_draw_char_bitmap(&char_bitmap, font, c, font_size_pt, display_ppi);
 
 		bitmap_combine(
 			bitmap,

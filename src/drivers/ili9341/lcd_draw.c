@@ -2,9 +2,22 @@
 
 #include "uart.h"
 
+static void send_pixel(uint8_t col_msb, uint8_t col_lsb) {
+	lcd_set_bus_data(col_msb);
+	lcd_write_strobe();
+
+	lcd_set_bus_data(col_lsb);
+	lcd_write_strobe();
+}
+
+static void start_frame_write() {
+	lcd_write_command(ILI9341_RAMWR);
+	LATBSET = __LCD_DC_MASK;
+}
+
 void lcd_set_address_window(uint16_t x0, uint16_t y0, uint16_t w, uint16_t h) {
-	uint16_t x1 = (x0 + w - 1);
-	uint16_t y1 = (y0 + h - 1);
+	uint16_t x1 = x0 + w - 1;
+	uint16_t y1 = y0 + h - 1;
 
 	if (x1 >= ILI9341_TFTWIDTH) x1 = ILI9341_TFTWIDTH - 1;
 	if (y1 >= ILI9341_TFTHEIGHT) y1 = ILI9341_TFTHEIGHT - 1;
@@ -28,18 +41,13 @@ void lcd_set_address_window(uint16_t x0, uint16_t y0, uint16_t w, uint16_t h) {
 }
 
 void lcd_fill(uint16_t color, uint16_t w, uint16_t h) {
-	lcd_write_command(ILI9341_RAMWR);
-	LATBSET = __LCD_DC_MASK;
+	start_frame_write();
 
 	uint8_t col_msb = color >> 8;
 	uint8_t col_lsb = color;
 
 	for (int i = 0; i < w * h; i++) {
-		lcd_set_bus_data(col_msb);
-		lcd_write_strobe();
-
-		lcd_set_bus_data(col_lsb);
-		lcd_write_strobe();
+		send_pixel(col_msb, col_lsb);
 	}
 
 	lcd_write_command(0x00); // Terminate the fill
@@ -541,23 +549,113 @@ void lcd_draw_bitmap1(
 ) {
 	lcd_set_address_window(p0.x, p0.y, bitmap->width, bitmap->height);
 
-	lcd_write_command(ILI9341_RAMWR);
-	LATBSET = __LCD_DC_MASK;
+	start_frame_write();
 
 	for (uint16_t y = 0; y < bitmap->height; y++) {
 		for (uint16_t x = 0; x < bitmap->width; x++) {
-			uint16_t color = bitmap_get_pixel(bitmap, x, y) ? color_fg : color_bg;
+			uint16_t color = bitmap8_get_pixel(bitmap, x, y) ? color_fg : color_bg;
 			
 			uint8_t col_msb = color >> 8;
 			uint8_t col_lsb = color;
 
-			lcd_set_bus_data(col_msb);
-			lcd_write_strobe();
-
-			lcd_set_bus_data(col_lsb);
-			lcd_write_strobe();
+			send_pixel(col_msb, col_lsb);
 		}
 	}
 
 	lcd_write_command(0x00); // Terminate the fill
+}
+
+typedef struct {
+	uint8_t color_fg_msb;
+	uint8_t color_fg_lsb;
+	uint8_t color_bg_msb;
+	uint8_t color_bg_lsb;
+} DrawCharContext;
+
+static void draw_char_fg_callback(int16_t x, int16_t y, void* context) {
+	DrawCharContext* draw_context = (DrawCharContext*)context;
+
+	send_pixel(draw_context->color_fg_msb, draw_context->color_fg_lsb);
+}
+
+static void draw_char_bg_callback(int16_t x, int16_t y, void* context) {
+	DrawCharContext* draw_context = (DrawCharContext*)context;
+
+	send_pixel(draw_context->color_bg_msb, draw_context->color_bg_lsb);
+}
+
+void lcd_draw_text(
+	const char* text,
+	const uint8_t* font,
+	uint16_t font_size_pt,
+	LCD_Point p0,
+	uint16_t color_fg,
+	uint16_t color_bg
+) {
+	float scale = ttf_get_scale(font, font_size_pt, LCD_PPI);
+
+	// Count the characters
+	int count = 0;
+	while (text[count++] != '\0');
+	count -= 1;
+
+	TTF_CharDims dims[count];
+	int16_t max_y = 0;
+	uint16_t total_width = 0;
+
+	for (int i = 0; i < count; i++) {
+		dims[i] = ttf_get_char_dims_scaled(font, text[i], scale);
+		total_width += dims[i].advance_width;
+
+		if (dims[i].max_y > max_y) max_y = dims[i].max_y;
+	}
+
+	int x_offset = p0.x;
+	int16_t line_offset = max_y;
+
+	LCD_Point text_end;
+	text_end.x = p0.x + total_width;
+	text_end.y = 0;
+
+	// Determine lowest and highest point of the text for drawing a background rect
+	for (int i = 0; i < count; i++) {
+		// Subtract -y because the glyph dimensions have a flipped Y axis
+		// relative to the screen's Y axis.
+		uint16_t lowest_point = line_offset - dims[i].y;
+
+		if (text_end.y < lowest_point) text_end.y = lowest_point;
+	}
+
+	text_end.y += p0.y;
+
+	lcd_draw_rect_filled(p0, text_end, color_bg);
+
+	DrawCharContext draw_context;
+	draw_context.color_fg_msb = color_fg >> 8;
+	draw_context.color_fg_lsb = color_fg;
+	draw_context.color_bg_msb = color_bg >> 8;
+	draw_context.color_bg_lsb = color_bg;
+
+	for (int i = 0; i < count; i++) {
+		lcd_set_address_window(
+			x_offset + dims[i].x,
+			p0.y + line_offset - dims[i].max_y,
+			dims[i].width,
+			dims[i].height
+		);
+		start_frame_write();
+		
+		gen_char_fill(
+			draw_char_fg_callback,
+			draw_char_bg_callback,
+			&draw_context,
+			font,
+			text[i],
+			scale
+		);
+
+		x_offset += dims[i].advance_width;
+	}
+
+	lcd_write_command(0x00); // Terminate final memory write	
 }

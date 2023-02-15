@@ -27,6 +27,11 @@ void uart_end();
 /// @param data Data to be written 
 void uart_write(const char* data);
 
+/// @brief Writes an unsigned int to UART1
+/// @param num Number to write 
+/// @param terminate_line If 1, terminates with a CRLF
+void uart_write_num(const uint32_t num, uint8_t terminate_line);
+
 /// @brief Writes raw data to UART1 and terminates with a CRLF
 /// @param data Data to be written
 void uart_write_line(const char* data);

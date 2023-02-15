@@ -59,32 +59,34 @@ static uint8_t ray_intersects_curve(
 	return (x_c + 0) <= x; // No idea why, but the x seems to be off by 1 pixel
 }
 
-static void transform_points(
+static void scale_points(
 	TTF_Point* points,
 	uint16_t num_points,
-	float scale,
-	int16_t x_offset,
-	int16_t y_offset,
-	uint16_t height
+	float scale
 ) {
 	for (int i = 0; i < num_points; i++) {
 		TTF_Point* p = &points[i];
 
 		p->x *= scale;
-		p->y *= scale * -1;
+		p->y *= scale;
+	}
+}
 
-		p->x += x_offset;
-		p->y += height - y_offset;
+static void flip_points(TTF_Point* points, uint16_t num_points, TTF_CharDims* dims) {
+	for (int i = 0; i < num_points; i++) {
+		TTF_Point* p = &points[i];
+
+		p->y = dims->max_y - p->y;
 	}
 }
 
 void gen_char_fill(
-	Bitmap8* bitmap,
+	void* pixel_fg(int16_t x, int16_t y, void* context),
+	void* pixel_bg(int16_t x, int16_t y, void* context),
+	void* callback_context,
 	const uint8_t* font,
 	char charcode,
-	float scale,
-	int bitmap_offset_x,
-	int bitmap_offset_y
+	float scale
 ) {
 	TTF_cmapSubtableFormat4* subtable = ttf_get_cmap_subtable(font);
 	int glyph_id = ttf_get_glyph_id(subtable, charcode);
@@ -97,11 +99,14 @@ void gen_char_fill(
 	uint16_t num_points = ttf_get_total_points(glyf_head);
 	TTF_Point points[num_points];
 
-	ttf_read_simple_glyph(font, glyph_id, points);
-	transform_points(points, num_points, scale, bitmap_offset_x, bitmap_offset_y, bitmap->height);
+	TTF_CharDims dims = ttf_get_char_dims_scaled(font, charcode, scale);
 
-	for (int y = 0; y < bitmap->height; y++) {
-		for (int x = bitmap_offset_x; x < bitmap->width; x++) {
+	ttf_read_simple_glyph(font, glyph_id, points);
+	scale_points(points, num_points, scale);
+	flip_points(points, num_points, &dims);
+
+	for (int y = 0; y < dims.height; y++) {
+		for (int x = dims.x; x < dims.max_x; x++) {
 			int cross_counter = 0;
 
 			for (int i = 0; i < num_points; i++) {
@@ -169,13 +174,60 @@ void gen_char_fill(
 			}
 
 			if (cross_counter != 0) {
-				bitmap->data[y * bitmap->width + x + bitmap_offset_x] = 1;
+				pixel_fg(x, y, callback_context);
+			} else {
+				pixel_bg(x, y, callback_context);
 			}
 		}
 	}
 }
 
-void gen_char_outline(
+typedef struct {
+	Bitmap8* bitmap;
+	int bitmap_offset_x;
+	int bitmap_offset_y;
+} DrawCharFillContext;
+
+static void draw_char_fill_fg_callback(int16_t x, int16_t y, void* context) {
+	DrawCharFillContext* fill_context = (DrawCharFillContext*)context;
+
+	bitmap8_set_pixel(
+		fill_context->bitmap,
+		x + fill_context->bitmap_offset_x,
+		y + fill_context->bitmap_offset_y,
+		1
+	);
+}
+
+static void draw_char_fill_bg_callback(int16_t x, int16_t y, void* context) {
+	// Do nothing for BG pixels when just drawing on the bitmap
+	return;
+}
+
+void draw_char_fill(
+	Bitmap8* bitmap,
+	const uint8_t* font,
+	char charcode,
+	float scale,
+	int bitmap_offset_x,
+	int bitmap_offset_y
+) {
+	DrawCharFillContext fill_context;
+	fill_context.bitmap = bitmap;
+	fill_context.bitmap_offset_x = bitmap_offset_x;
+	fill_context.bitmap_offset_y = bitmap_offset_y;
+
+	gen_char_fill(
+		draw_char_fill_fg_callback,
+		draw_char_fill_bg_callback,
+		&fill_context,
+		font,
+		charcode,
+		scale
+	);
+}
+
+void draw_char_outline(
 	Bitmap8* bitmap,
 	const uint8_t* font,
 	char charcode,
@@ -194,8 +246,11 @@ void gen_char_outline(
 	uint16_t num_points = ttf_get_total_points(glyf_head);
 	TTF_Point points[num_points];
 
+	TTF_CharDims dims = ttf_get_char_dims_scaled(font, charcode, scale);
+
 	ttf_read_simple_glyph(font, glyph_id, points);
-	transform_points(points, num_points, scale, bitmap_offset_x, bitmap_offset_y, bitmap->height);
+	scale_points(points, num_points, scale);
+	flip_points(points, num_points, &dims);
 
 	// Mark outline points
 	for (int i = 0; i < num_points; i++) {

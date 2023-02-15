@@ -22,6 +22,17 @@ void uart_write(const char* data) {
 	}
 }
 
+void uart_write_num(uint32_t num, uint8_t terminate_line) {
+	char buf[16];
+	num2char(num, buf, 16);
+
+	if (terminate_line) {
+		uart_write_line(buf);
+	} else {
+		uart_write(buf);
+	}
+}
+
 void uart_write_line(const char* data) {
 	uart_write(data);
 	uart_write("\r\n");

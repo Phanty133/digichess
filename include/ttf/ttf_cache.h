@@ -1,5 +1,5 @@
 /// @file ttf_cache.h
-/// @brief [NYI] TTF glyph caching support.
+/// @brief [NYI] TTF glyph caching
 
 #ifndef __TTF_CACHE_H
 #define __TTF_CACHE_H

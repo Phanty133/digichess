@@ -15,12 +15,20 @@ void bitmap_combine(Bitmap8* dest, Bitmap8* src, uint32_t offset_x, uint32_t off
 	}
 }
 
-uint8_t bitmap_get_pixel(Bitmap8* bitmap, uint16_t x, uint16_t y) {
+uint8_t bitmap8_get_pixel(Bitmap8* bitmap, uint16_t x, uint16_t y) {
 	if ((x < 0 || x >= bitmap->width)
 		|| (y < 0 || y >= bitmap->height)
 	) return 0;
 
 	return bitmap->data[y * bitmap->width + x];
+}
+
+void bitmap8_set_pixel(Bitmap8* bitmap, uint16_t x, uint16_t y, uint8_t value) {
+	if ((x < 0 || x >= bitmap->width)
+		|| (y < 0 || y >= bitmap->height)
+	) return;
+
+	bitmap->data[y * bitmap->width + x] = value;
 }
 
 void bitmap_rotate90(Bitmap8* dest, Bitmap8* src) {

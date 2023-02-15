@@ -168,7 +168,7 @@ uint16_t ttf_parse_glyph_coords_x(TTF_glyfHead* glyf_head, uint16_t offset, TTF_
 	return cur_x - x_start;
 }
 
-uint16_t ttf_parse_glyph_coords_y(TTF_glyfHead* glyf_head, uint16_t offset, TTF_Point* points, const uint8_t* font) {
+uint16_t ttf_parse_glyph_coords_y(TTF_glyfHead* glyf_head, uint16_t offset, TTF_Point* points) {
 	uint16_t total_points = ttf_get_total_points(glyf_head);
 
 	uint8_t* flag_start = ttf_get_flag_start(glyf_head);
@@ -251,6 +251,6 @@ void ttf_read_simple_glyph(
 	// Allocate memory for points
 	uint16_t flags_size = ttf_parse_glyph_flags(glyf_head, out_points);
 	uint16_t x_size = ttf_parse_glyph_coords_x(glyf_head, flags_size, out_points);
-	uint16_t y_size = ttf_parse_glyph_coords_y(glyf_head, flags_size + x_size, out_points, font);
+	uint16_t y_size = ttf_parse_glyph_coords_y(glyf_head, flags_size + x_size, out_points);
 	ttf_set_next_point_ref(out_points, total_points);
 }

@@ -13,13 +13,14 @@
 #include <stdbool.h>
 
 void led_test();
-void draw_test();
+void lcd_test();
 void font_test();
+void lcd_font_test();
 
 int main() {
 	uart_begin(115200);
 
-	font_test();
+	lcd_font_test();
 
 	return 0;
 }
@@ -46,22 +47,126 @@ void led_test(){
 	}
 }
 
+void lcd_font_test() {
+	lcd_init();
+	lcd_select();
+
+	uint16_t fontsize = 20;
+	float scale = ttf_get_scale(COMICSANSMS, fontsize, LCD_PPI);
+
+	LCD_Point p0, p1;
+	p0.x = 0;
+	p0.y = 0;
+
+	p1.x = 240;
+	p1.y = 320;
+
+	lcd_draw_rect_filled(p0, p1, 0xFFFF);
+
+	uint16_t color_fg = rgb_24b_to_16b(0xFF0000);
+	uint16_t color_bg = rgb_24b_to_16b(0x0088FF);
+
+	p0.x = 0;
+	p0.y = 10;
+
+	lcd_draw_text(
+		"abcdefgh",
+		COMICSANSMS,
+		fontsize,
+		p0,
+		color_fg,
+		color_bg
+	);
+
+	p0.x = 0;
+	p0.y = 50;
+
+	lcd_draw_text(
+		"ijklmnopq",
+		COMICSANSMS,
+		fontsize,
+		p0,
+		color_fg,
+		color_bg
+	);
+
+	p0.x = 0;
+	p0.y = 90;
+
+	lcd_draw_text(
+		"rstuvwxyz",
+		COMICSANSMS,
+		fontsize,
+		p0,
+		color_fg,
+		color_bg
+	);
+
+	p0.x = 0;
+	p0.y = 130;
+
+	lcd_draw_text(
+		"ABCDEFGH",
+		COMICSANSMS,
+		fontsize,
+		p0,
+		color_fg,
+		color_bg
+	);
+
+	p0.x = 0;
+	p0.y = 170;
+
+	lcd_draw_text(
+		"IJKLMNOP",
+		COMICSANSMS,
+		fontsize,
+		p0,
+		color_fg,
+		color_bg
+	);
+
+	p0.x = 0;
+	p0.y = 210;
+
+	lcd_draw_text(
+		"QRSTUVW",
+		COMICSANSMS,
+		fontsize,
+		p0,
+		color_fg,
+		color_bg
+	);
+
+	p0.x = 0;
+	p0.y = 250;
+
+	lcd_draw_text(
+		"XYZ",
+		COMICSANSMS,
+		fontsize,
+		p0,
+		color_fg,
+		color_bg
+	);
+}
+
 void font_test() {
 	lcd_init();
 	lcd_select();
 
-	uint16_t fontsize = 64;
+	uint16_t fontsize = 18;
 	float scale = ttf_get_scale(COMICSANSMS, fontsize, LCD_PPI);
 
 	Bitmap8 bitmap;
 	bitmap.width = 100;
-	bitmap.height = 120;
+	bitmap.height = 64;
 	
 	uint8_t bitmap_data[bitmap.width * bitmap.height];
 	bitmap.data = bitmap_data;
 	bitmap_clear(&bitmap);
 
-	ttf_draw_string(&bitmap, COMICSANSMS, "R", fontsize, LCD_PPI);
+	ttf_draw_text(&bitmap, COMICSANSMS, "Hey", fontsize, LCD_PPI);
 
 	// Bitmap8 bitmap90deg;
 	// bitmap90deg.height = 300;
