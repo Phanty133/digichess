@@ -31,4 +31,10 @@ int ceil(float x);
 /// @return sqrt(x) if 0 <= x <= 32767. NaN otherwise
 float sqrtf_16b(int16_t x);
 
+/// @brief Calculate an integer x^a, a >= 0
+/// @param x Base
+/// @param a Power
+/// @return x^a
+int pow(int x, uint32_t a);
+
 #endif

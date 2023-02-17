@@ -638,6 +638,11 @@ void lcd_draw_text(
 	draw_context.color_bg_lsb = color_bg;
 
 	for (int i = 0; i < count; i++) {
+		if (text[i] == ' ') {
+			x_offset += dims[i].advance_width;
+			continue;
+		}
+
 		lcd_set_address_window(
 			x_offset + dims[i].x,
 			p0.y + line_offset - dims[i].max_y,
@@ -659,5 +664,61 @@ void lcd_draw_text(
 	}
 
 	lcd_write_command(0x00); // Terminate final memory write
-#endif	
+#endif
+}
+
+static void draw_image_pixel(uint32_t x, uint32_t y, BMP_Color color, void* context) {
+	uint16_t color_hex = rgbarr_24b_to_16b(color.r, color.g, color.b);
+
+	uint8_t col_msb = (color_hex >> 8);
+	uint8_t col_lsb = (color_hex);
+
+	send_pixel(col_msb, col_lsb);
+}
+
+void lcd_draw_image(LCD_Point p0, const uint8_t* image) {
+	const BMP_InfoHeader* info = bmp_get_info(image);
+
+	lcd_set_address_window(p0.x, p0.y, info->width, info->height);
+	start_frame_write();
+
+	bmp_decode(image, draw_image_pixel, 0);
+}
+
+typedef struct {
+	uint8_t color_fg_msb;
+	uint8_t color_fg_lsb;
+	uint8_t color_bg_msb;
+	uint8_t color_bg_lsb;
+} DrawImage1BitPixelContext;
+
+static void draw_image_1bit_pixel(uint32_t x, uint32_t y, BMP_Color color, void* context) {
+	DrawImage1BitPixelContext* img_context = (DrawImage1BitPixelContext*)context;
+
+	if (color.r == 0) {
+		// Foreground
+		send_pixel(img_context->color_fg_msb, img_context->color_fg_lsb);
+	} else {
+		// Background
+		send_pixel(img_context->color_bg_msb, img_context->color_bg_lsb);
+	}
+}
+
+void lcd_draw_image_1bit(
+	LCD_Point p0,
+	const uint8_t* image,
+	uint16_t color_fg,
+	uint16_t color_bg
+) {
+	const BMP_InfoHeader* info = bmp_get_info(image);
+	DrawImage1BitPixelContext context;
+	context.color_bg_msb = (color_bg >> 8);
+	context.color_bg_lsb = color_bg;
+	context.color_fg_msb = (color_fg >> 8);
+	context.color_fg_lsb = color_fg;
+
+	lcd_set_address_window(p0.x, p0.y, info->width, info->height);
+	start_frame_write();
+
+	bmp_decode(image, draw_image_1bit_pixel, &context);
 }

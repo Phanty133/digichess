@@ -39,3 +39,15 @@ float sqrtf_16b(int16_t x) {
 	return SQRT_15BIT[x];
 #endif
 }
+
+int pow(int x, uint32_t a) {
+	if (a == 0) return 1;
+
+	int cur_val = x;
+
+	for (uint32_t i = 0; i < a - 1; i++) {
+		cur_val *= x;
+	}
+
+	return cur_val;
+}

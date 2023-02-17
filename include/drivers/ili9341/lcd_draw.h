@@ -14,6 +14,9 @@
 #include "ttf/ttf_scan.h"
 #include "ttf/ttf_structs.h"
 #include "ttf/ttf_funcs.h"
+#include "bmp/bmp_decode.h"
+#include "bmp/bmp_structs.h"
+#include "bmp/bmp_funcs.h"
 
 /// @struct LCD_Point
 /// @brief A point on the LCD
@@ -170,6 +173,24 @@ void lcd_draw_text(
 	const uint8_t* font,
 	uint16_t fontsize,
 	LCD_Point p0,
+	uint16_t color_fg,
+	uint16_t color_bg
+);
+
+/// @brief Draws a BMP image with the top-left corner at p0
+/// @param p0 Top-left offset
+/// @param image BMP image file byte array
+void lcd_draw_image(LCD_Point p0, const uint8_t* image);
+
+/// @brief Draws a 1-bit BMP image with the top-left corner at p0.\
+	Recolors foreground and background pixels.
+/// @param p0 Top-left offset
+/// @param image BMP image file byte array
+/// @param color_fg Color for pixels that are black in the source image
+/// @param color_bg Color for pixels that are white in the source image
+void lcd_draw_image_1bit(
+	LCD_Point p0,
+	const uint8_t* image,
 	uint16_t color_fg,
 	uint16_t color_bg
 );

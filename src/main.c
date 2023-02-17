@@ -10,19 +10,37 @@
 #include "ttf/ttf_draw.h"
 #include "ttf/ttf_funcs.h"
 #include "bitmap.h"
+#include "images/viewsonic_1bit.bmp.h"
 #include <stdbool.h>
 
 void led_test();
 void lcd_test();
 void font_test();
 void lcd_font_test();
+void lcd_image_test();
 
 int main() {
 	uart_begin(115200);
 
-	lcd_font_test();
+	lcd_image_test();
 
 	return 0;
+}
+
+void lcd_image_test() {
+	lcd_init();
+	lcd_select();
+
+	LCD_Point p0;
+	p0.x = 0;
+	p0.y = 20;
+
+	lcd_draw_image_1bit(
+		p0,
+		VIEWSONIC_1BIT,
+		rgb_24b_to_16b(0xFF0000),
+		rgb_24b_to_16b(0xAAFF00)
+	);
 }
 
 void led_test(){
@@ -52,8 +70,6 @@ void lcd_font_test() {
 	lcd_select();
 
 	uint16_t fontsize = 20;
-	float scale = ttf_get_scale(COMICSANSMS, fontsize, LCD_PPI);
-
 	LCD_Point p0, p1;
 	p0.x = 0;
 	p0.y = 0;
