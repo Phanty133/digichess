@@ -10,6 +10,8 @@
 #include "drivers/ili9341/lcd_defines.h"
 #include "drivers/ili9341/lcd_comms.h"
 #include "drivers/ili9341/lcd_utils.h"
+#include "drivers/ili9341/lcd_controls.h"
+#include "drivers/ili9341/lcd_setup.h"
 #include "bitmap.h"
 #include "ttf/ttf_scan.h"
 #include "ttf/ttf_structs.h"

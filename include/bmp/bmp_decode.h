@@ -7,6 +7,7 @@
 #include <stdint.h>
 #include "bmp_structs.h"
 #include "bmp_funcs.h"
+#include "uart.h"
 
 void bmp_decode(
 	const uint8_t* file,

@@ -10,6 +10,8 @@
 #include "ttf/ttf_draw.h"
 #include "ttf/ttf_funcs.h"
 #include "bitmap.h"
+#include "images/viewsonic_8bit.bmp.h"
+#include "images/viewsonic_4bit.bmp.h"
 #include "images/viewsonic_1bit.bmp.h"
 #include <stdbool.h>
 
@@ -31,12 +33,27 @@ void lcd_image_test() {
 	lcd_init();
 	lcd_select();
 
-	LCD_Point p0;
-	p0.x = 0;
-	p0.y = 20;
+	LCD_Point p;
+	p.x = 0;
+	p.y = 20;
+
+	LCD_Point p0, p1;
+	p0.x = 20;
+	p0.y = 300;
+	p1.x = 200;
+	p1.y = 320;
+
+	lcd_draw_line(p0, p1, 0xF000, 5);
+
+	lcd_draw_image(p, VIEWSONIC_8BIT);
+	lcd_draw_image(p, VIEWSONIC_4BIT);
+
+	p0.y = 280;
+
+	lcd_draw_line(p0, p1, 0x000F, 5);
 
 	lcd_draw_image_1bit(
-		p0,
+		p,
 		VIEWSONIC_1BIT,
 		rgb_24b_to_16b(0xFF0000),
 		rgb_24b_to_16b(0xAAFF00)

@@ -107,6 +107,7 @@ void lcd_power_on() {
 	lcd_hw_reset();
 
 	lcd_set_settings();
+	lcd_set_orientation(LCD_X_ORIENTATION, LCD_Y_ORIENTATION);
 	delay_milli(120);
 
 	lcd_sleep_off();

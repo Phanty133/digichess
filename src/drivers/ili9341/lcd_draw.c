@@ -19,8 +19,8 @@ void lcd_set_address_window(uint16_t x0, uint16_t y0, uint16_t w, uint16_t h) {
 	uint16_t x1 = x0 + w - 1;
 	uint16_t y1 = y0 + h - 1;
 
-	if (x1 >= ILI9341_TFTWIDTH) x1 = ILI9341_TFTWIDTH - 1;
-	if (y1 >= ILI9341_TFTHEIGHT) y1 = ILI9341_TFTHEIGHT - 1;
+	if (x1 >= LCD_WIDTH) x1 = LCD_WIDTH - 1;
+	if (y1 >= LCD_HEIGHT) y1 = LCD_HEIGHT - 1;
 
 	uint8_t casetData[] = {
 		x0 >> 8,
@@ -57,11 +57,11 @@ void lcd_calibrate(uint8_t direction) {
 	uint16_t w, h;
 
 	if (direction == 0) {
-		w = ILI9341_TFTHEIGHT;
-		h = ILI9341_TFTWIDTH;
+		w = LCD_HEIGHT;
+		h = LCD_WIDTH;
 	} else {
-		h = ILI9341_TFTHEIGHT;
-		w = ILI9341_TFTWIDTH;
+		h = LCD_HEIGHT;
+		w = LCD_WIDTH;
 	}
 
 	uint16_t size = 32;
@@ -679,10 +679,21 @@ static void draw_image_pixel(uint32_t x, uint32_t y, BMP_Color color, void* cont
 void lcd_draw_image(LCD_Point p0, const uint8_t* image) {
 	const BMP_InfoHeader* info = bmp_get_info(image);
 
-	lcd_set_address_window(p0.x, p0.y, info->width, info->height);
+	// Flip the y axis because bitmaps are drawn bottom-to-top
+	lcd_set_orientation(LCD_X_ORIENTATION, !LCD_Y_ORIENTATION);
+
+	lcd_set_address_window(
+		p0.x,
+		LCD_HEIGHT - p0.y - info->height,
+		info->width,
+		info->height
+	);
 	start_frame_write();
 
 	bmp_decode(image, draw_image_pixel, 0);
+
+	// Reset the y axis
+	lcd_set_orientation(LCD_X_ORIENTATION, LCD_Y_ORIENTATION);
 }
 
 typedef struct {
@@ -717,8 +728,19 @@ void lcd_draw_image_1bit(
 	context.color_fg_msb = (color_fg >> 8);
 	context.color_fg_lsb = color_fg;
 
-	lcd_set_address_window(p0.x, p0.y, info->width, info->height);
+	// Flip the y axis because bitmaps are drawn bottom-to-top
+	lcd_set_orientation(LCD_X_ORIENTATION, !LCD_Y_ORIENTATION);
+
+	lcd_set_address_window(
+		p0.x,
+		LCD_HEIGHT - p0.y - info->height,
+		info->width,
+		info->height
+	);
 	start_frame_write();
 
 	bmp_decode(image, draw_image_1bit_pixel, &context);
+
+	// Reset the y axis
+	lcd_set_orientation(LCD_X_ORIENTATION, LCD_Y_ORIENTATION);
 }

@@ -4,8 +4,8 @@
 #ifndef __LCD_DEFINES_H
 #define __LCD_DEFINES_H
 
-#define ILI9341_TFTWIDTH (240)  // ILI9341 max TFT width
-#define ILI9341_TFTHEIGHT (320) // ILI9341 max TFT height
+#define LCD_WIDTH (240)  // ILI9341 max TFT width
+#define LCD_HEIGHT (320) // ILI9341 max TFT height
 #define LCD_PPI (143)
 
 /*

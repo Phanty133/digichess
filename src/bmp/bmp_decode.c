@@ -22,7 +22,7 @@ static void decode_uncompressed(
 	uint8_t bpp = info->bpp;
 
 	if (bpp >= 16) {
-		// printf("Uncompressed bitmaps with bpp > 8 unsupported");
+		uart_write_line("[WARNING] Uncompressed bitmaps with bpp > 8 unsupported");
 		return;
 	}
 
@@ -35,11 +35,9 @@ static void decode_uncompressed(
 	int w = info->width;
 	int h = info->height;
 
-	// Images are stored bottom-to-top, left-to-right
-	// Start in the bottom-left corner
-	uint32_t cur_byte_index = row_size * (h - 1);
+	uint32_t cur_byte_index = 0;
 
-	for (int y = h - 1; y >= 0; y--) {
+	for (int y = 0; y < h; y++) {
 		uint8_t cur_byte = 0;
 
 		for (int x = 0; x < w; x++) {
@@ -58,24 +56,91 @@ static void decode_uncompressed(
 
 		uint8_t row_padding = row_size - cur_byte_index % row_size;
 		cur_byte_index += row_padding;
-		cur_byte_index -= row_size * 2;
 	}
 }
 
-static void decode_rle4(
+static void decode_rle(
 	const uint8_t* file,
 	void pixel_callback(uint32_t x, uint32_t y, BMP_Color color, void* context),
 	void* callback_context
 ) {
+	const BMP_InfoHeader* info = bmp_get_info(file);
+	uint8_t bpp = info->bpp;
+	BMP_Compression compression = bmp_get_compression(file);
 
-}
+	const BMP_Color* color_table = bmp_get_color_table(file);
+	const uint16_t color_table_size = bmp_get_color_table_size(file);
+	const uint8_t* img_data = bmp_get_image_data(file);
+	const uint32_t row_size = bmp_get_row_size(file);
 
-static void decode_rle8(
-	const uint8_t* file,
-	void pixel_callback(uint32_t x, uint32_t y, BMP_Color color, void* context),
-	void* callback_context
-) {
+	int w = info->width;
+	int h = info->height;
+	int imgsize = info->image_size;
 
+	uint8_t control_byte = 0;
+	uint8_t param_byte = 0;
+
+	// Not the prettiest code, but it seems to work fine, so ¯\_(ツ)_/¯
+
+	for (int i = 0; i < imgsize; i += 2) {
+		control_byte = img_data[i];
+		param_byte = img_data[i + 1];
+
+		if (control_byte == 0) {
+			if (param_byte == 1) {
+				// A goto outside of ASM. Dear god.
+				goto end_of_bitmap;
+			} else if (param_byte == 2) {
+				// The position change command has 2 extra bytes
+				i += 2;
+			} else if (param_byte >= 3) {
+				// Absolute mode
+
+				uint32_t bytes_parsed;
+
+				if (compression == RLE_4BIT) {
+					for (int j = i + 2; j < i + 2 + param_byte / 2; j++) {
+						uint8_t msb = (img_data[j] >> 4);
+						uint8_t lsb = (img_data[j] & 0x0F);
+
+						pixel_callback(0, 0, color_table[msb], callback_context);
+						pixel_callback(0, 0, color_table[lsb], callback_context);
+					}
+
+					bytes_parsed = param_byte / 2;
+				} else {
+					for (int j = i + 2; j < i + 2 + param_byte; j++) {
+						pixel_callback(0, 0, color_table[img_data[j]], callback_context);
+					}
+
+					bytes_parsed = param_byte;
+				}
+
+				// The absolute command is zero-padded to a 16-bit boundary
+				uint8_t padding = bytes_parsed % 2;
+				i += bytes_parsed + padding;
+			}
+
+			continue;
+		}
+
+		// Repeat index in param_byte
+
+		if (compression == RLE_4BIT) {
+			uint8_t msb = (param_byte >> 4);
+			uint8_t lsb = (param_byte & 0x0F);
+
+			for (int j = 0; j < control_byte; j++) {
+				pixel_callback(0, 0, color_table[j % 2 == 0 ? msb : lsb], callback_context);
+			}
+		} else {
+			for (int j = 0; j < control_byte; j++) {
+				pixel_callback(0, 0, color_table[param_byte], callback_context);
+			}
+		}
+	}
+end_of_bitmap:
+	return;
 }
 
 void bmp_decode(
@@ -90,10 +155,11 @@ void bmp_decode(
 			decode_uncompressed(file, pixel_callback, callback_context);
 			break;
 		case RLE_4BIT:
-			decode_rle4(file, pixel_callback, callback_context);
-			break;
 		case RLE_8BIT:
-			decode_rle8(file, pixel_callback, callback_context);
+			decode_rle(file, pixel_callback, callback_context);
+			break;
+		default:
+			uart_write_line("[WARNING] Unsupported BMP compression");
 			break;
 	}
 }

@@ -10,6 +10,9 @@
 #include "drivers/ili9341/lcd_defines.h"
 #include "drivers/ili9341/lcd_controls.h"
 
+#define LCD_X_ORIENTATION 1
+#define LCD_Y_ORIENTATION 0
+
 /// @brief Configures the display pins
 void lcd_init_pins();
 

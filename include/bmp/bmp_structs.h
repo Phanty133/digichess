@@ -1,25 +1,28 @@
 /// @file bmp_structs.h
-/// @brief BMP format data structures
+/// @brief BMP image format data structures
 
 #ifndef __BMP_STRUCTS_H
 #define __BMP_STRUCTS_H
 
 #include <stdint.h>
 
+/// @brief BMP compression method
 typedef enum {
 	UNCOMPRESSED,
-	RLE_4BIT,
-	RLE_8BIT
+	RLE_8BIT,
+	RLE_4BIT
 } BMP_Compression;
 
+/// @brief Main BMP file header
 typedef struct __attribute__((__packed__)) {
 	uint16_t header; ///< Must be BM
-	uint32_t file_size;
+	uint32_t file_size; ///< Size of the BMP file
 	uint16_t _reserved1;
 	uint16_t _reserved2;
 	uint32_t data_offset; ///< Offset to image data
 } BMP_Header;
 
+/// @brief BMP file BITMAPINFOHEADER structure. Compatible with the BITMAPV5HEADER format.
 typedef struct __attribute__((__packed__)) {
 	uint32_t header_size; ///< Must be 40
 	int32_t width; ///< Bitmap width
@@ -34,6 +37,7 @@ typedef struct __attribute__((__packed__)) {
 	uint32_t important_colors; ///< Ignored
 } BMP_InfoHeader;
 
+/// @brief BMP color entry in BGRA format
 typedef struct __attribute__((__packed__)) {
 	uint8_t b;
 	uint8_t g;
