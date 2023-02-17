@@ -8,4 +8,10 @@ Mini-project for KTH IS1200
 - `make test` - Run tests
 - `make clean` - Clean build directory
 
+### Compiler flags
+
 To compile without font rendering (Reduces program upload time), set the make `DEFINES` variable to `DISABLE_FONT_RENDERING`, e.g. `make dev DEFINES=DISABLE_FONT_RENDERING`
+
+### Adding files
+
+To add a file to the microcontroller, run `python tools/generate_file_header.py <PATH_TO_FILE> <OUTPUT_DIR_IN_INCLUDES>`. A header file containing a const byte array with the file data will be generated in the specified directory in includes.

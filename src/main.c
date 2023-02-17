@@ -6,14 +6,15 @@
 #include "drivers/ili9341/lcd_touch.h"
 #include "drivers/ili9341/lcd_defines.h"
 #include "drivers/ws2812b/ws2812b.h"
-#include "fonts/ComicSansMS.ttf.h"
+#include "bitmap.h"
 #include "ttf/ttf_draw.h"
 #include "ttf/ttf_funcs.h"
-#include "bitmap.h"
+
+// Files
+#include "fonts/ComicSansMS.ttf.h"
 #include "images/viewsonic_8bit.bmp.h"
 #include "images/viewsonic_4bit.bmp.h"
 #include "images/viewsonic_1bit.bmp.h"
-#include <stdbool.h>
 
 void led_test();
 void lcd_test();
@@ -66,7 +67,7 @@ void led_test(){
 	led_init(leds, num_leds);
 	int counter = 0;
 
-	while(true){
+	while(1){
 		led_set(leds, counter, 0x0000FF);
 		
 		if (counter == 0) {

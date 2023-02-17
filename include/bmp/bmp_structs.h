@@ -13,6 +13,7 @@ typedef enum {
 	RLE_4BIT
 } BMP_Compression;
 
+/// @struct BMP_Header
 /// @brief Main BMP file header
 typedef struct __attribute__((__packed__)) {
 	uint16_t header; ///< Must be BM
@@ -22,6 +23,7 @@ typedef struct __attribute__((__packed__)) {
 	uint32_t data_offset; ///< Offset to image data
 } BMP_Header;
 
+/// @struct BMP_InfoHeader
 /// @brief BMP file BITMAPINFOHEADER structure. Compatible with the BITMAPV5HEADER format.
 typedef struct __attribute__((__packed__)) {
 	uint32_t header_size; ///< Must be 40
@@ -37,6 +39,7 @@ typedef struct __attribute__((__packed__)) {
 	uint32_t important_colors; ///< Ignored
 } BMP_InfoHeader;
 
+/// @struct BMP_Color
 /// @brief BMP color entry in BGRA format
 typedef struct __attribute__((__packed__)) {
 	uint8_t b;
