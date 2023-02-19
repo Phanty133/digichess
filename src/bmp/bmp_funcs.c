@@ -19,7 +19,7 @@ const BMP_Color* bmp_get_color_table(const uint8_t* file) {
 const uint16_t bmp_get_color_table_size(const uint8_t* file) {
 	const BMP_InfoHeader* info = bmp_get_info(file);
 
-	return info->num_colors == 0 ? pow(2, info->bpp) : info->num_colors;
+	return info->num_colors == 0 ? powi(2, info->bpp) : info->num_colors;
 }
 
 const BMP_Compression bmp_get_compression(const uint8_t* file) {

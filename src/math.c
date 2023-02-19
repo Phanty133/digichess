@@ -6,7 +6,7 @@
 #include "lut/sqrt.lut.h"
 #endif
 
-int abs(int x) {
+int absi(int x) {
 	return x < 0 ? -x : x;
 }
 
@@ -14,7 +14,7 @@ float absf(float x) {
 	return x < 0 ? -x : x;
 }
 
-int floor(float x) {
+int floori(float x) {
 	int n = (int)x;
 	float d = (float)x;
 
@@ -25,8 +25,10 @@ int floor(float x) {
 	return d - 1;
 }
 
-int ceil(float x) {
-	return floor(x) + 1;
+int ceili(float x) {
+	if ((int)x == x) return x;
+
+	return floori(x) + 1;
 }
 
 float sqrtf_16b(int16_t x) {
@@ -40,7 +42,7 @@ float sqrtf_16b(int16_t x) {
 #endif
 }
 
-int pow(int x, uint32_t a) {
+int powi(int x, uint32_t a) {
 	if (a == 0) return 1;
 
 	int cur_val = x;
