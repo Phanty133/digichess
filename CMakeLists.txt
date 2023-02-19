@@ -19,8 +19,12 @@ FetchContent_MakeAvailable(googletest)
 
 # Now simply link against gtest or gtest_main as needed. Eg
 
-FILE(GLOB_RECURSE TEST_FILES CONFIGURE_DEPENDS "${TEST_DIR}/*.test.cpp")
-string(REGEX REPLACE "^(.+)\/${TEST_DIR}\/(.+)\.test\.cpp$" "\\1/${SRC_DIR}/\\2.c" SRC_FILES ${TEST_FILES})
+FILE(GLOB_RECURSE TEST_FILES CONFIGURE_DEPENDS RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}/${TEST_DIR}" "${TEST_DIR}/*.test.cpp")
+set(SRC_FILES ${TEST_FILES})
+
+list(TRANSFORM TEST_FILES PREPEND "${TEST_DIR}/")
+list(TRANSFORM SRC_FILES PREPEND "${SRC_DIR}/")
+list(TRANSFORM SRC_FILES REPLACE ".test.cpp" ".c")
 
 add_executable(digichess-tests ${SRC_FILES} ${TEST_FILES})
 target_include_directories(digichess-tests PUBLIC ${INC_DIR})
