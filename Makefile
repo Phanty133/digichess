@@ -74,7 +74,9 @@ all: build_dir $(HEXFILE)
 dev: all install
 
 test:
-	@echo "NYI: Tests are on the todo list"
+	@cmake -B $(BUILD_DIR)/cmake
+	@cd $(BUILD_DIR)/cmake; make
+	@$(BUILD_DIR)/cmake/digichess-tests
 
 clean:
 	$(RM) -R $(BUILD_DIR)

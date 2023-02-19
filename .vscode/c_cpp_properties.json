@@ -5,6 +5,7 @@
             "includePath": [
                 "${workspaceFolder}/**",
                 "${workspaceFolder}/include",
+                "${workspaceFolder}/gtest/googletest/include",
                 "/opt/mcb32tools/include"
             ],
             "defines": [],
