@@ -9,6 +9,7 @@
 #include <stdbool.h>
 #include "sys_defines.h"
 #include "delay.h"
+#include "stringops.h"
 
 #define __UART_ON_MASK (1 << 15)
 #define __UART_TXEN_MASK (1 << 10)
@@ -43,11 +44,5 @@ char uart_read_byte();
 /// @brief Check whether data is available on UART1
 /// @return True if data is available
 bool uart_read_available();
-
-/// @brief Converts num to char*. Here only because I couldn't get sprintf to compile
-/// @param num Number to convert
-/// @param buf Buffer to write to
-/// @param bufsize Buffer size
-void num2char(uint32_t num, char* buf, const uint32_t bufsize);
 
 #endif

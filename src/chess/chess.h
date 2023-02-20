@@ -1,11 +1,8 @@
 #ifndef __CHESS_H
 #define __CHESS_H
 
-#include<stdio.h>
-
-
-typedef enum{false, true} bool;
-
+#include <stdio.h>
+#include <stdbool.h>
 
 typedef enum Piece{
     none,

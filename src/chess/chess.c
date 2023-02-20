@@ -1,6 +1,5 @@
 #include "chess.h"
 #include "string.h"
-#include <stdlib.h>
 
 void check_legal_moves_king(int* moves, ChessBoard* board, int y0, int x0, bool white);
 
