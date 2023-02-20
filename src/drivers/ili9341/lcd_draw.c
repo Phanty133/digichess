@@ -53,6 +53,11 @@ void lcd_fill(uint16_t color, uint16_t w, uint16_t h) {
 	lcd_write_command(0x00); // Terminate the fill
 }
 
+void lcd_clear() {
+	lcd_set_address_window(0, 0, LCD_WIDTH, LCD_HEIGHT);
+	lcd_fill(0xFFFF, LCD_WIDTH, LCD_HEIGHT);
+}
+
 void lcd_calibrate(uint8_t direction) {
 	uint16_t w, h;
 

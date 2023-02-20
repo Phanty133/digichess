@@ -40,6 +40,9 @@ void lcd_set_address_window(uint16_t x0, uint16_t y0, uint16_t w, uint16_t h);
 /// @param h Height of the address window
 void lcd_fill(uint16_t color, uint16_t w, uint16_t h);
 
+/// @brief Fills the LCD with white
+void lcd_clear();
+
 /// @brief Shows coordinate calibration marks. Corners: red (0,0); green (w, 0); blue (0, h); black (w, h)
 /// @param direction The direction of the display set in MADCTL. 0 - horizontal; 1 - vertical
 void lcd_calibrate(uint8_t direction);

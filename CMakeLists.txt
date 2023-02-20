@@ -17,8 +17,6 @@ FetchContent_Declare(
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
-# Now simply link against gtest or gtest_main as needed. Eg
-
 FILE(GLOB_RECURSE TEST_FILES CONFIGURE_DEPENDS RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}/${TEST_DIR}" "${TEST_DIR}/*.test.cpp")
 set(SRC_FILES ${TEST_FILES})
 
