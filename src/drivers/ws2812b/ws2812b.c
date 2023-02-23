@@ -1,14 +1,15 @@
 #include "drivers/ws2812b/ws2812b.h"
 
 void led_init(uint32_t* leds, int num_leds){
-	TRISE &= 0xEF;
+	LED_TRIS_CLR = LED_MASK;
+	
 	for(int i = 0; i < num_leds; ++i){
 		leds[i] = 0;
 	}
 }
 
 void led_reset(){
-	PORTE &= 0xEF;
+	LED_PORT_CLR = LED_MASK;
 	delay_micro(100);
 }
 
@@ -31,7 +32,7 @@ void led_set(uint32_t* leds, int led_num, uint32_t color){
 }
 
 void led_display(uint32_t* leds, int num_leds){
-	LATECLR = LED_MASK;
+	LED_PORT_CLR = LED_MASK;
 
 	for(int i = 0; i < num_leds; i++) {
 		led_write_color(leds[i]);

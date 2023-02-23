@@ -10,7 +10,9 @@ Mini-project for KTH IS1200
 
 ### Compiler flags
 
-To compile without font rendering (Reduces program upload time), set the make `DEFINES` variable to `DISABLE_FONT_RENDERING`, e.g. `make dev DEFINES=DISABLE_FONT_RENDERING`
+To compile without font rendering (Reduces program upload time), set the make `DEFINES` variable to `DISABLE_FONT_RENDERING`, e.g. `make dev DEFINES=DISABLE_FONT_RENDERING`.
+
+To compile without uploading any file, set the make `DEFINES` variable to `QUICK_UPLOAD`, e.g. `make dev DEFINES=QUICK_UPLOAD`.
 
 ### Adding files
 

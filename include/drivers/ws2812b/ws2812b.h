@@ -10,7 +10,16 @@
 #include "bitops.h"
 #include "delay.h"
 
-#define LED_MASK (1 << 4)
+// status led - pin 40 - F5
+// prom led - pin 39 - F4
+// board led - pin 38 - F6
+
+#define LED_TRIS_CLR TRISFCLR
+#define LED_PORT_SET LATFSET
+#define LED_PORT_CLR LATFCLR
+#define LED_PORT_INV LATFINV
+#define LED_MASK (1 << 6)
+
 #define __DELAY_425NS __asm__ volatile("\
 		nop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\n \
 		nop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\n \
@@ -37,13 +46,13 @@
 
 // 800ns (64 cycles) High
 // 450ns (36 cycles) Low
-#define __WRITE_1 LATEINV = LED_MASK;__DELAY_825NS;LATEINV = LED_MASK;__DELAY_425NS
+#define __WRITE_1 LED_PORT_INV = LED_MASK;__DELAY_825NS;LED_PORT_INV = LED_MASK;__DELAY_425NS
 
 // 400ns (32 cycles) High
 // 850ns (68 cycles) Low
 // The first HIGH delay actually uses 100ns because it doesn't work otherwise
 // due to latency
-#define __WRITE_0 LATEINV = LED_MASK;__DELAY_100NS;LATEINV = LED_MASK;__DELAY_825NS
+#define __WRITE_0 LED_PORT_INV = LED_MASK;__DELAY_100NS;LED_PORT_INV = LED_MASK;__DELAY_825NS
 #define __WRITE_BIT(b) if (b) { __WRITE_1; } else { __WRITE_0; }
 
 /// @brief Initialize pin 30 as output and set the LEDS values to 0
