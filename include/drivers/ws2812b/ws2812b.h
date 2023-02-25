@@ -20,54 +20,63 @@
 #define LED_PORT_INV LATFINV
 #define LED_MASK (1 << 6)
 
-#define __DELAY_425NS __asm__ volatile("\
+// TODO: Rewrite with interrupts
+
+// Measures out to 800ns
+#define __DELAY_1_HIGH __asm__ volatile("\
 		nop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\n \
 		nop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\n \
-		nop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\n \
-		nop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\n \
-		nop\nnop\n\
+		nop\n\
 	")
 
-#define __DELAY_100NS __asm__ volatile("\
-		nop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\n \
+#define __DELAY_1_LOW __asm__ volatile("\
+		nop\n\
 	")
 
-#define __DELAY_825NS __asm__ volatile("\
-		nop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\n \
-		nop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\n \
-		nop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\n \
-		nop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\n \
-		nop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\n \
-		nop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\n \
-		nop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\n \
-		nop\nnop\nnop\nnop\nnop\nnop\nnop\nnop\n \
-		nop\nnop\n\
+// Measures out to 400-440ns
+#define __DELAY_0_HIGH __asm__ volatile("\
+		nop\nnop\nnop\nnop\nnop\nnop\nnop\n \
+	")
+
+#define __DELAY_0_LOW __asm__ volatile("\
+		nop\nnop\nnop\n\
 	")
 
 // 800ns (64 cycles) High
 // 450ns (36 cycles) Low
-#define __WRITE_1 LED_PORT_INV = LED_MASK;__DELAY_825NS;LED_PORT_INV = LED_MASK;__DELAY_425NS
+#define __WRITE_1 \
+	LED_PORT_INV = LED_MASK;\
+	__DELAY_1_HIGH;\
+	LED_PORT_INV = LED_MASK;
 
 // 400ns (32 cycles) High
 // 850ns (68 cycles) Low
-// The first HIGH delay actually uses 100ns because it doesn't work otherwise
-// due to latency
-#define __WRITE_0 LED_PORT_INV = LED_MASK;__DELAY_100NS;LED_PORT_INV = LED_MASK;__DELAY_825NS
+#define __WRITE_0 \
+	LED_PORT_INV = LED_MASK;\
+	__DELAY_0_HIGH;\
+	LED_PORT_INV = LED_MASK;\
+	__DELAY_0_LOW
+
 #define __WRITE_BIT(b) if (b) { __WRITE_1; } else { __WRITE_0; }
+
+#define ELS_PER_LED (24)
 
 /// @brief Initialize pin 30 as output and set the LEDS values to 0
 /// @param leds Array of 32bit integers corresponding to colors of each LED
 /// @param num_leds Number of LEDs
-void led_init(uint32_t* leds, int num_leds);
+void led_init(uint8_t* leds, int num_leds);
 
 /// @brief Set an LED to an RGB value
 /// @param leds Array of 32bit integers corresponding to colors of each LED
 /// @param led LED to update
 /// @param color 24bit RGB color to set the LED to
-void led_set(uint32_t* leds, int led, uint32_t color);
+void led_set(uint8_t* leds, int led, uint32_t color);
 
 /// @brief Display the initialized LED color values
 /// @param leds Array of 32bit integers corresponding to colors of each LED
 /// @param num_leds Number of LEDs
-void led_display(uint32_t* leds, int num_leds);
+void led_display(uint8_t* leds, int num_leds);
+
+uint32_t led_get_arr_size(uint32_t num_leds);
+
 #endif

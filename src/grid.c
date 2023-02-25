@@ -1,9 +1,9 @@
 #include "grid.h"
 
-uint32_t LED_DATA[GRID_LED_COUNT] = {};
+uint32_t LED_DATA[GRID_LED_COUNT * ELS_PER_LED] = {};
 
 void grid_init() {
-	led_init(LED_DATA, GRID_LED_COUNT);
+	led_init(LED_DATA, led_get_arr_size(GRID_LED_COUNT));
 
 	uint16_t mux_select_mask =
 		MUX_R0_MASK
@@ -40,7 +40,7 @@ uint8_t grid_read_square(uint8_t row, uint8_t col) {
 	// TODO rewrite to not overwrite other D pins
 	LATD = mux_state;
 
-	return !((PORTB & MUX_OUT_MASK) >> MUX_OUT_PIN);
+	return ((PORTB & MUX_OUT_MASK) >> MUX_OUT_PIN);
 }
 
 void grid_set_color(uint8_t row, uint8_t col, uint32_t color, uint8_t display) {
@@ -52,4 +52,8 @@ void grid_set_color(uint8_t row, uint8_t col, uint32_t color, uint8_t display) {
 	}
 
 	if (display) led_display(LED_DATA, GRID_LED_COUNT);
+}
+
+uint32_t* grid_get_led_data() {
+	return LED_DATA;
 }

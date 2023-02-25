@@ -9,14 +9,14 @@
 
 /* Non-Maskable Interrupt; something bad likely happened, so hang */
 void _nmi_handler() {
-	volatile int cause;
-	__asm__ volatile("mfc0 %0, $13" : "=r"(cause));
+	// volatile int cause;
+	// __asm__ volatile("mfc0 %0, $13" : "=r"(cause));
 
-	char buf[32];
-	num2char(cause, buf, 32);
+	// char buf[32];
+	// num2char(cause, buf, 32);
 
-	uart_write("EXCEPTION CAUSE: ");
-	uart_write_line(buf);
+	// uart_write("EXCEPTION CAUSE: ");
+	// uart_write_line(buf);
 
 	for(;;);
 }

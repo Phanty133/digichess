@@ -22,7 +22,7 @@
 #define MUX_OUT_MASK (1 << MUX_OUT_PIN)
 
 #define GRID_LEDS_PER_SQUARE (3)
-#define GRID_LED_COUNT (64 * GRID_LEDS_PER_SQUARE)
+#define GRID_LED_COUNT (16 * GRID_LEDS_PER_SQUARE)
 #define GRID_LED_PIN 69 // TODO: Make it actually use this pin
 
 #include <pic32mx.h>
@@ -45,5 +45,7 @@ uint8_t grid_read_square(uint8_t row, uint8_t col);
 /// @param color 24bit RGB color
 /// @param display If 1, updates the LEDs immediately
 void grid_set_color(uint8_t row, uint8_t col, uint32_t color, uint8_t display);
+
+uint32_t* grid_get_led_data();
 
 #endif

@@ -108,19 +108,19 @@ $(DEPDIR):
 
 # The second expansion and foreach stuff is needed to compile the files in all subdirectories
 .SECONDEXPANSION:
-%.c.o: $$(foreach dir,$(SRC_DIRS),$$(wildcard $$(dir)/$$*.c)) envcheck | $(DEPDIR)
+%.c.o: $$(foreach dir,$(SRC_DIRS),$$(wildcard $$(dir)$$*.c)) envcheck | $(DEPDIR)
 	$(CC) $(CFLAGS) -c -MD -o $(BUILD_DIR)/$@ $< $(INC_FLAGS)
 	@cp $(BUILD_DIR)/$*.c.d $(df).c.P; sed -e 's/#.*//' -e 's/^[^:]*: *//' -e 's/ *\\$$//' -e '/^$$/ d' -e 's/$$/ :/' < $(BUILD_DIR)/$*.c.d >> $(df).c.P; $(RM) $(BUILD_DIR)/$*.c.d
 
-# Compile ASM files with C pre-processor directives
+# Compile ASM files
 .SECONDEXPANSION:
-%.S.o: $$(foreach dir,$(SRC_DIRS),$$(wildcard $$(dir)/$$*.S)) envcheck | $(DEPDIR)
-	$(CC) $(CFLAGS) $(ASFLAGS) -c -MD -o $(BUILD_DIR)/$@ $< $(INC_FLAGS)
+%.S.o: $$(foreach dir,$(SRC_DIRS),$$(wildcard $$(dir)$$*.S)) envcheck | $(DEPDIR)
+	$(CC) $(CFLAGS) $(ASFLAGS) -c -MD -o $(BUILD_DIR)/$@ $<
 	@cp $(BUILD_DIR)/$*.S.d $(df).S.P; sed -e 's/#.*//' -e 's/^[^:]*: *//' -e 's/ *\\$$//' -e '/^$$/ d' -e 's/$$/ :/' < $(BUILD_DIR)/$*.S.d >> $(df).S.P; $(RM) $(BUILD_DIR)/$*.S.d
 
 # Link symbol lists to object files
 .SECONDEXPANSION:
-%.syms.o: $$(foreach dir,$(SRC_DIRS),$$(wildcard $$(dir)/$$*.syms))
+%.syms.o: $$(foreach dir,$(SRC_DIRS),$$(wildcard $$(dir)$$*.syms))
 	$(LD) -o $(BUILD_DIR)/$@ -r --just-symbols=$<
 
 build_dir:
