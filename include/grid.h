@@ -46,6 +46,6 @@ uint8_t grid_read_square(uint8_t row, uint8_t col);
 /// @param display If 1, updates the LEDs immediately
 void grid_set_color(uint8_t row, uint8_t col, uint32_t color, uint8_t display);
 
-uint32_t* grid_get_led_data();
+uint8_t* grid_get_led_data();
 
 #endif

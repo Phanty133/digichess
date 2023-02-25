@@ -87,7 +87,7 @@ bool lcd_touch_read_x(uint16_t* outX) {
 	// undefined command. 0xEF instead of something like 0xFF because D4 
 	// is on a different port, so it's quicker to just set all port D pins
 	// Seriously. Fuck this display. Never buy shit from Velleman.
-	LATD |= __LCD_PORTD_MASK;
+	LATE |= __LCD_PORTE_MASK;
 
 	// Set port B pins (X-, Y+)
 	TRISB = (TRISB | __TOUCH_YP_MASK) & (~__TOUCH_XM_MASK);
@@ -126,7 +126,7 @@ bool lcd_touch_read_y(uint16_t* outY) {
 	// a valid command.
 	// LATDSET = __LCD_PORTD_MASK;
 	// LATDCLR = __TOUCH_YM_MASK;
-	LATD = (LATD | __LCD_PORTD_MASK) & (~(__LCD_D1_MASK));
+	LATE = (LATD | __LCD_PORTE_MASK) & (~(__LCD_D1_MASK));
 
 	// Set port B pins (X-, Y+)
 	TRISB = (TRISB | __TOUCH_XM_MASK) & (~__TOUCH_YP_MASK);

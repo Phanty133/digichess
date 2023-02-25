@@ -16,14 +16,11 @@
 /// @brief Configures the display pins
 void lcd_init_pins();
 
-/// @brief Configures port D pins
-void lcd_init_portd();
-
 /// @brief Configures port B pins
 void lcd_init_portb();
 
-/// @brief Configures port F pins
-void lcd_init_portf();
+/// @brief Configures port D pins
+void lcd_init_portd();
 
 /// @brief Performs the power on sequence
 void lcd_power_on();

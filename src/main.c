@@ -5,8 +5,8 @@
 #include "sys_defines.h"
 
 // #define DEBUG_BOARD
-// #define DEBUG_LCD
-#define DEBUG_BUZZER
+#define DEBUG_LCD
+// #define DEBUG_BUZZER
 
 #ifdef DEBUG_BOARD
 #include "grid.h"
@@ -42,8 +42,7 @@ void setup() {
 #ifdef DEBUG_LCD
 	lcd_init();
 	lcd_select();
-	// lcd_test_all();
-	lcd_draw_test();
+	lcd_test_all();
 #endif
 
 #ifdef DEBUG_BOARD

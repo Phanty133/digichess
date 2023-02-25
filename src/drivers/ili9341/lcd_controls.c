@@ -11,9 +11,9 @@ void lcd_deselect() {
 }
 
 void lcd_hw_reset() {
-	LATBCLR = __LCD_RST_MASK;
+	LATDCLR = __LCD_RST_MASK;
 	delay_milli(150);
-	LATBSET = __LCD_RST_MASK;
+	LATDSET = __LCD_RST_MASK;
 	delay_milli(150);
 }
 

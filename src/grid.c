@@ -1,6 +1,6 @@
 #include "grid.h"
 
-uint32_t LED_DATA[GRID_LED_COUNT * ELS_PER_LED] = {};
+uint8_t LED_DATA[GRID_LED_COUNT * ELS_PER_LED] = {};
 
 void grid_init() {
 	led_init(LED_DATA, led_get_arr_size(GRID_LED_COUNT));
@@ -54,6 +54,6 @@ void grid_set_color(uint8_t row, uint8_t col, uint32_t color, uint8_t display) {
 	if (display) led_display(LED_DATA, GRID_LED_COUNT);
 }
 
-uint32_t* grid_get_led_data() {
+uint8_t* grid_get_led_data() {
 	return LED_DATA;
 }

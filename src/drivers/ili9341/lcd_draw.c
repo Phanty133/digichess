@@ -3,11 +3,8 @@
 #include "uart.h"
 
 static void send_pixel(uint8_t col_msb, uint8_t col_lsb) {
-	lcd_set_bus_data(col_msb);
-	lcd_write_strobe();
-
-	lcd_set_bus_data(col_lsb);
-	lcd_write_strobe();
+	lcd_write_data(col_msb);
+	lcd_write_data(col_lsb);
 }
 
 static void start_frame_write() {

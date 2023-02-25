@@ -2,7 +2,7 @@
 
 void led_test() {
 	int num_leds = 24;
-	uint32_t leds[num_leds];
+	uint8_t leds[num_leds];
 	led_init(leds, num_leds);
 	int counter = 0;
 

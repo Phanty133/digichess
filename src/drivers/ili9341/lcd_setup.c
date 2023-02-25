@@ -31,49 +31,40 @@ static const uint8_t INIT_OPTIONS[] = {
 };
 
 void lcd_init_pins() {
-	// D0 - pin 8 - D10
-	// D1 - pin 9 - D3
-	// D2 - pin 2 - D8
-	// D3 - pin 3 - D0
-	// D4 - pin 4 - F1
-	// D5 - pin 5 - D1
-	// D6 - pin 6 - D2
-	// D7 - pin 7 - D9
+	// Data pins - Port E 0-7
 
-	// RST - A4 - B12
-	// CS - A3 - B10 = CSX
-	// RS - A2 - B8 = D/CX
-	// WR - A1 - B4 = WRX
-	// RD - A0 - B2 = RDX
+	// RST - 35 - D11
+	// CS - A8 - B9 = CSX
+	// RS - A7 - B5 = D/CX
+	// WR - 10 - D4 = WRX
+	// RD - 34 - D5 = RDX
 
-	// Outputs
+	PMCON = 0x0000; // Stop PMP module and clear register
 
-	// Set pins as outputs
-	// Port D: 1111 1000 1111 1000
-	// Port F: 1111 1111 1111 1101
-	// Port B: 1110 1001 1110 1011
+	PMCONSET =
+		(1 << 0) // PMRD strobe active high
+		| (1 << 1) // PMWR strobe active high
+		| (1 << 9); // Enable PMWR/PMENB port
 
-	lcd_init_portd();
-	lcd_init_portf();
+	PMMODESET = (0b10 << 8); // Set master mode 2
+	PMAEN = 0; // Disable all address and CS lines
 	lcd_init_portb();
-}
+	lcd_init_portd();
 
-void lcd_init_portd() {
-	TRISDCLR = __LCD_PORTD_MASK;
-	LATDCLR = __LCD_PORTD_MASK;
+	PMCONSET = 0x8000; // Enable module
 }
 
 void lcd_init_portb() {
 	TRISBCLR = __LCD_PORTB_MASK;
-	uint16_t setHighMask = __LCD_RST_MASK | __LCD_CS_MASK | __LCD_RD_MASK;
+	uint16_t setHighMask = __LCD_CS_MASK;
 
 	LATBCLR = __LCD_PORTB_MASK & (~setHighMask);
 	LATBSET = setHighMask;
 }
 
-void lcd_init_portf() {
-	TRISFCLR = __LCD_PORTF_MASK;
-	LATFCLR = __LCD_PORTF_MASK;
+void lcd_init_portd() {
+	TRISDCLR = __LCD_RST_MASK;
+	LATDSET = __LCD_RST_MASK;
 }
 
 void lcd_set_settings() {

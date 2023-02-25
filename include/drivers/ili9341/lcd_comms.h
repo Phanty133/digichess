@@ -13,13 +13,6 @@
 
 // 8080 MCU 8-bit bus interface Ⅱ
 
-/// @brief Sets the D0-D7 bits of the LCD bus
-/// @param data Data byte
-void lcd_set_bus_data(uint8_t data);
-
-/// @brief Pulses the WRX signal
-void lcd_write_strobe();
-
 /// @brief Writes a command to the display (D/C LOW)
 /// @param command Command byte
 void lcd_write_command(uint8_t command);
@@ -34,10 +27,16 @@ void lcd_write_data(uint8_t data);
 /// @param data_size Number of data bytes
 void lcd_write_register(uint8_t command, uint8_t* data, uint32_t data_size);
 
-/// @brief Pulses the RDX signal
-void lcd_read_strobe();
-
 /// @brief [NYI] Reads data from the display
 void lcd_read_data(uint8_t command);
+
+/// @brief Sets the D/C pin to LOW
+void lcd_set_command_mode();
+
+/// @brief Sets the D/C pin to HIGH
+void lcd_set_data_mode();
+
+/// @brief Wait until the PMP is not busy
+void lcd_wait_available();
 
 #endif
