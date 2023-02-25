@@ -4,6 +4,8 @@
 #ifndef __MATH_H
 #define __MATH_H
 
+#define S_TO_NS (1000000000)
+
 #include <stdint.h>
 
 /// @brief Returns an integer absolute value
