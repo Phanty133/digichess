@@ -20,17 +20,9 @@ void led_set(uint8_t* leds, int led_num, uint32_t color){
 
 	int start = led_num * ELS_PER_LED;
 
-	for (int i = 0; i < 8; i++) {
-		leds[start + i] = get_bit(g, 7 - i);
-	}
-
-	for (int i = 0; i < 8; i++) {
-		leds[start + i + 8] = get_bit(r, 7 - i);
-	}
-
-	for (int i = 0; i < 8; i++) {
-		leds[start + i + 16] = get_bit(b, 7 - i);
-	}
+	leds[start] = g;
+	leds[start + 1] = r;
+	leds[start + 2] = b;
 }
 
 void led_display(uint8_t* leds, int num_leds){
@@ -38,7 +30,9 @@ void led_display(uint8_t* leds, int num_leds){
 	uint32_t arr_size = led_get_arr_size(num_leds);
 
 	for (int i = 0; i < arr_size; i++) {
-		__WRITE_BIT(leds[i]);
+		for (int bit = 7; bit >= 0; bit--) {
+			__WRITE_BIT(get_bit(leds[i], bit));
+		}
 	}
 
 	led_reset();

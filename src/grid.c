@@ -27,20 +27,18 @@ uint8_t grid_read_square(uint8_t row, uint8_t col) {
 	uint8_t c1 = get_bit(col, 1);
 	uint8_t c2 = get_bit(col, 2);
 
-	uint16_t cur_latd = LATD;
+	uint16_t cur_latd = PORTD;
 
-	uint16_t mux_state =
-		(r0 << MUX_R0_PIN)
-		| (r1 << MUX_R1_PIN)
-		| (r2 << MUX_R2_PIN)
-		| (c0 << MUX_C0_PIN)
-		| (c1 << MUX_C1_PIN)
-		| (c2 << MUX_C2_PIN);
+	cur_latd = set_bit(cur_latd, MUX_R0_PIN, r0);
+	cur_latd = set_bit(cur_latd, MUX_R1_PIN, r1);
+	cur_latd = set_bit(cur_latd, MUX_R2_PIN, r2);
+	cur_latd = set_bit(cur_latd, MUX_C0_PIN, c0);
+	cur_latd = set_bit(cur_latd, MUX_C1_PIN, c1);
+	cur_latd = set_bit(cur_latd, MUX_C2_PIN, c2);
 
-	// TODO rewrite to not overwrite other D pins
-	LATD = mux_state;
+	LATD = cur_latd;
 
-	return ((PORTB & MUX_OUT_MASK) >> MUX_OUT_PIN);
+	return get_bit(PORTB, MUX_OUT_PIN);
 }
 
 void grid_set_color(uint8_t row, uint8_t col, uint32_t color, uint8_t display) {
@@ -56,4 +54,11 @@ void grid_set_color(uint8_t row, uint8_t col, uint32_t color, uint8_t display) {
 
 uint8_t* grid_get_led_data() {
 	return LED_DATA;
+}
+
+void grid_reset_sensors() {
+	LATFCLR = GRID_POWER_MASK;
+	delay_milli(2750);
+	LATFSET = GRID_POWER_MASK;
+	delay_milli(50);
 }

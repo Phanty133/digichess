@@ -58,6 +58,7 @@ int move_piece(ChessBoard* board, int y0, int x0, int y1, int x1);
 
 bool is_checkmate(ChessBoard* board, bool whites_turn);
 bool is_stalemate(ChessBoard* board, bool whites_turn);
+bool contains_legal_move(int* legal_moves, int move);
 //Returns an allocated array with all the legal moves. The first element of the array will always contain the number of legal moves
 void get_moves_pawn(int* moves, ChessBoard *board, int y, int x, bool white);
 void get_moves_rook(int* moves, Piece board[8][8], int y, int x, bool white);

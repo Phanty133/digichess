@@ -59,7 +59,7 @@
 
 #define __WRITE_BIT(b) if (b) { __WRITE_1; } else { __WRITE_0; }
 
-#define ELS_PER_LED (24)
+#define ELS_PER_LED (3) // A byte per color
 
 /// @brief Initialize pin 30 as output and set the LEDS values to 0
 /// @param leds Array of 32bit integers corresponding to colors of each LED

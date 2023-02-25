@@ -111,7 +111,7 @@ void empty_board(ChessBoard* board) {
 	}
 	board->kingMoves[0] = board->kingMoves[1] = false; // setting flags
 	for (int i = 0; i < 4; ++i) {
-		board->rookMoves[i] = false;
+		board->rookMoves[i] = true;
 	}
 	board->lastPawnDoubleMove = false;
 	board->whites_turn = true;
@@ -432,18 +432,28 @@ void get_moves_king(int* moves, ChessBoard *board, int y, int x, bool white) {
 	if (is_under_attack(board, y, x, white))
 		return;
 	if (white && !board->kingMoves[0]) {
-		if (!board->rookMoves[0] && at(board, 0, 1) == none && at(board, 0, 2) == none && at(board, 0, 3) == none && !is_under_attack(board, 0, 1, white) && !is_under_attack(board, 0, 2, white) && !is_under_attack(board, 0, 3, white)) {
+		if (!board->rookMoves[0] && at(board, 0, 1) == none 
+		&& at(board, 0, 2) == none && at(board, 0, 3) == none 
+		&& !is_under_attack(board, 0, 1, white) && !is_under_attack(board, 0, 2, white) 
+		&& !is_under_attack(board, 0, 3, white) && at(board, 0, 0) == wRook) {
 			add_move(moves, get_index(0, 2));
 		}
-		if (!board->rookMoves[1] && at(board, 0, 6) == none && at(board, 0, 5) == none && !is_under_attack(board, 0, 6, white) && !is_under_attack(board, 0, 5, white)) {
+		if (!board->rookMoves[1] && at(board, 0, 6) == none 
+		&& at(board, 0, 5) == none && !is_under_attack(board, 0, 6, white) 
+		&& !is_under_attack(board, 0, 5, white) && at(board, 0, 7) == wRook) {
 			add_move(moves, get_index(0, 6));
 		}
 	}
 	if (!white && !board->kingMoves[1]) {
-		if (!board->rookMoves[3] && at(board, 7, 1) == none && at(board, 7, 2) == none && at(board, 7, 3) == none && !is_under_attack(board, 7, 1, white) && !is_under_attack(board, 7, 2, white) && !is_under_attack(board, 7, 3, white)) {
+		if (!board->rookMoves[3] && at(board, 7, 1) == none && at(board, 7, 2) == none 
+		&& at(board, 7, 3) == none && !is_under_attack(board, 7, 1, white) 
+		&& !is_under_attack(board, 7, 2, white) 
+		&& !is_under_attack(board, 7, 3, white) && at(board, 7, 0) == bRook) {
 			add_move(moves, get_index(7, 2));
 		}
-		if (!board->rookMoves[4] && at(board, 7, 6) == none && at(board, 7, 5) == none && !is_under_attack(board, 7, 6, white) && !is_under_attack(board, 7, 5, white)) {
+		if (!board->rookMoves[4] && at(board, 7, 6) == none 
+		&& at(board, 7, 5) == none && !is_under_attack(board, 7, 6, white) 
+		&& !is_under_attack(board, 7, 5, white) && at(board, 7, 7) == bRook) {
 			add_move(moves, get_index(7, 6));
 		}
 	}
