@@ -105,11 +105,12 @@ void setup() {
 	chess_board.rookMoves[2] = false;
 	chess_board.rookMoves[3] = false;
 	// place_at(&chess_board, 1, 4, wKing);
-	for (int r = 0; r < GRID_ROWS; r++)
+	for (int r = 0; r < GRID_ROWS; r++) {
 		for(int c = 0; c < GRID_COLS; c++) {
 			placed_pieces_last[r][c] = !grid_read_square(r, c);//(chess_at_index(&chess_board, get_grid_index(r, c)) != none);
 			grid_set_color(r, c, chess_at_index(&chess_board, get_grid_index(r, c)) ? 0x000008 : 0, 0); 	
 		}
+	}
 	led_display(grid_get_led_data(), GRID_LED_COUNT);
 	selected_piece = -1;
 	targeted_piece = -1;
@@ -140,43 +141,44 @@ void loop() {
 #ifdef DEBUG_CHESS_GAME
 	uint32_t color;
 	if (chess_flag == STALEMATE) {
-		for (int r = 0; r < GRID_ROWS; r++ )
+		for (int r = 0; r < GRID_ROWS; r++ ) {
 			for (int c = 0; c < GRID_COLS; c++) {
 				color = (get_grid_index(r, c) / 8 + get_grid_index(r, c) % 8 +counter) % 2 ? 0x080000 : 0x080808;
 				
 				grid_set_color(r, c, color, 0);
 			}
+		}
 		led_display(grid_get_led_data(), GRID_LED_COUNT);
 		delay_milli(300);
 		counter++;
 		return;
 	} else if (chess_flag == WHITE_WINS) {
-		for (int r = 0; r < GRID_ROWS; r++ )
+		for (int r = 0; r < GRID_ROWS; r++ ) {
 			for (int c = 0; c < GRID_COLS; c++) {
 				color = counter % 2 ? 0xffffff : 0x080808;
 				
 				grid_set_color(r, c, color, 1);
 				delay_milli(100);
 			}
-		
+		}
 		counter++;
 		return;
 	} else if (chess_flag == BLACK_WINS) {
-		for (int r = 0; r < GRID_ROWS; r++ )
+		for (int r = 0; r < GRID_ROWS; r++ ) {
 			for (int c = 0; c < GRID_COLS; c++) {
 				color = counter % 2 ? 0x080000 : 0xff0000;
 				
 				grid_set_color(r, c, color, 1);
 				delay_milli(100);
 			}
-		
+		}
 		counter++;
 		return;
 	}
 
 	grid_reset_sensors();
 	
-	for (int r = 0; r < GRID_ROWS; r++)
+	for (int r = 0; r < GRID_ROWS; r++){
 		for (int c = 0; c < GRID_COLS; c++) {
 			placed_pieces_curr[r][c] = !grid_read_square(r, c);
 			if (placed_pieces_curr[r][c] == placed_pieces_last[r][c]) 
@@ -229,13 +231,13 @@ void loop() {
 				targeted_piece = get_grid_index(r, c);
 			}
 		}
-		
+	}
 	// if (selected_piece != -1 && moves[0] == 0) { //DEBUG
 	// 	debug1 = 1;
 	// }
 	
 	
-	for (int r = 0; r < GRID_ROWS; ++r )
+	for (int r = 0; r < GRID_ROWS; ++r ) {
 		for (int c = 0; c < GRID_ROWS; ++c) {
 			color = 0;
 			if (is_white(chess_at_index(&chess_board, get_grid_index(r, c))))
@@ -260,7 +262,7 @@ void loop() {
 
 			grid_set_color(r, c, color, 0);
 		}
-	
+	}
 	// if (debug1) {
 	// 	grid_set_color(0, debug1, 0xaaaaaa, 0);
 	// }
