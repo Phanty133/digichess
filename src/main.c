@@ -3,25 +3,12 @@
 #include "uart.h"
 #include "delay.h"
 #include "sys_defines.h"
+#include "tests.h"
 
 // #define DEBUG_BOARD
 // #define DEBUG_LCD
 // #define DEBUG_BUZZER
 #define DEBUG_CHESS_GAME
-
-#ifdef DEBUG_BOARD
-#include "grid.h"
-#include "drivers/ws2812b/ws2812b.h"
-#endif
-
-#ifdef DEBUG_LCD
-#include "drivers/ili9341/lcd_setup.h"
-#include "drivers/ili9341/lcd_tests.h"
-#endif
-
-#ifdef DEBUG_BUZZER
-#include "buzzer.h"
-#endif
 
 #ifdef DEBUG_CHESS_GAME
 #include "chess/chess.h"
@@ -62,30 +49,15 @@ void setup() {
 	uart_begin(115200);
 
 #ifdef DEBUG_BUZZER
-	buzzer_init();
-
-	buzzer_on();
-	delay_milli(500);
-	buzzer_off();
-	delay_milli(500);
-	buzzer_on();
-	delay_milli(500);
-	buzzer_off();
+	debug_buzzer_setup();
 #endif
 	
 #ifdef DEBUG_LCD
-	lcd_init();
-	lcd_select();
-	lcd_test_all();
+	debug_lcd_setup();
 #endif
 
 #ifdef DEBUG_BOARD
-	grid_init();
-
-	TRISFCLR = GRID_POWER_MASK;
-	LATFCLR = GRID_POWER_MASK;
-
-	led_display(grid_get_led_data(), GRID_LED_COUNT);
+	debug_board_setup();
 #endif
 
 #ifdef DEBUG_CHESS_GAME
@@ -105,11 +77,13 @@ void setup() {
 	chess_board.rookMoves[2] = false;
 	chess_board.rookMoves[3] = false;
 	// place_at(&chess_board, 1, 4, wKing);
-	for (int r = 0; r < GRID_ROWS; r++)
+	for (int r = 0; r < GRID_ROWS; r++) {
 		for(int c = 0; c < GRID_COLS; c++) {
 			placed_pieces_last[r][c] = !grid_read_square(r, c);//(chess_at_index(&chess_board, get_grid_index(r, c)) != none);
 			grid_set_color(r, c, chess_at_index(&chess_board, get_grid_index(r, c)) ? 0x000008 : 0, 0); 	
 		}
+	}
+
 	led_display(grid_get_led_data(), GRID_LED_COUNT);
 	selected_piece = -1;
 	targeted_piece = -1;
@@ -121,22 +95,9 @@ void setup() {
 
 void loop() {
 #ifdef DEBUG_BOARD
-	grid_reset_sensors();
-
-	for (int r = 0; r < GRID_ROWS; r++) {
-		for (int c = 0; c < GRID_COLS; c++) {
-			uint32_t color = !grid_read_square(r, c) ? 0x000088 : 0x80000;
-
-			if (c == 7) {
-				uart_write_num(color, 1);
-			}
-
-			grid_set_color(r, c, color, 0);
-		}
-	}
-
-	led_display(grid_get_led_data(), GRID_LED_COUNT);
+	debug_board_loop();
 #endif
+
 #ifdef DEBUG_CHESS_GAME
 	uint32_t color;
 	if (chess_flag == STALEMATE) {
