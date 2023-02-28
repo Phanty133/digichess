@@ -58,7 +58,7 @@ uint8_t* grid_get_led_data() {
 
 void grid_reset_sensors() {
 	LATFCLR = GRID_POWER_MASK;
-	delay_milli(2750);
+	delay_milli(3000);
 	LATFSET = GRID_POWER_MASK;
 	delay_milli(50);
 }

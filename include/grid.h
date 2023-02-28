@@ -21,8 +21,11 @@
 #define MUX_OUT_PIN (1)
 #define MUX_OUT_MASK (1 << MUX_OUT_PIN)
 
+#define GRID_ROWS 8
+#define GRID_COLS 8
+
 #define GRID_LEDS_PER_SQUARE (3)
-#define GRID_LED_COUNT (32 * GRID_LEDS_PER_SQUARE)
+#define GRID_LED_COUNT (GRID_ROWS * GRID_COLS * GRID_LEDS_PER_SQUARE)
 #define GRID_LED_PIN 69 // TODO: Make it actually use this pin
 
 #define GRID_POWER_MASK (1 << 1)

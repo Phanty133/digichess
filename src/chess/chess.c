@@ -51,7 +51,7 @@ Piece at(ChessBoard *board, int y, int x) {
 		return board->board[y][x];
 	//printf("ERROR!");
 }
-Piece at_index(ChessBoard *board, int index) {
+Piece chess_at_index(ChessBoard *board, int index) {
 	int y = index / 8, x = index % 8;
 	if (y >= 0 && y < 8 && x >= 0 && y < 8)
 		return board->board[y][x];
@@ -63,6 +63,14 @@ void place_at(ChessBoard *board, int y, int x, Piece piece) {
 	//else
 		//printf("ERROR!");
 }
+
+extern inline bool is_illegal(MoveFlag flag) {
+	return flag <= 2;
+}
+extern inline bool is_game_over(MoveFlag flag) {
+	return flag >= 8;
+}
+
 
 // Takes a 64 byte char array and places pieces on it
 void arrange_board(ChessBoard* board) {
@@ -120,7 +128,7 @@ void empty_board(ChessBoard* board) {
 
 void copy_board(ChessBoard* target, ChessBoard* source) { 
 	for (int i = 0; i < 64; ++i) 
-		place_at(target, i / 8, i % 8, at_index(source, i));
+		place_at(target, i / 8, i % 8, chess_at_index(source, i));
 	
 	target->whites_turn = source->whites_turn;
 
@@ -152,50 +160,68 @@ Piece select_promotion(bool white){
 
 int move_piece(ChessBoard* board, int y0, int x0, int y1, int x1) {
 	if (!is_valid_place(y0, x0) || !is_valid_place(y1, x1))
-		return -3; // Code for an attempt at an impossible move
+		return OUT_OF_BOARD; // Code for an attempt at an impossible move
 	if (is_white(at(board, y0, x0)) != board->whites_turn)
-		return -2; // Code for an attempt to move out of turn	
+		return NOT_YOUR_TURN; // Code for an attempt to move out of turn	
 	int legal_moves[30];
 	get_legal_moves(legal_moves, board, y0, x0);
 	if (!contains_legal_move(legal_moves, get_index(y1, x1)))
-		return -1; // Code for an attempt at an illegal move
+		return ILLEGAL_MOVE; // Code for an attempt at an illegal move
 	
-	int flag = 0;
+	MoveFlag flag = NORMAL_MOVE;
 
 	Piece moved_piece = at(board, y0, x0);
 	
+	if (y0 == 0 && x0 == 4)
+		board->kingMoves[0] = true;
+	if (y0 == 7 && x0 == 4)
+		board->kingMoves[1] = true;
+	
+	
+	if (y0 == 0 && x0 == 0)
+		board->rookMoves[0] = true;
+	if (y0 == 0 && x0 == 7)
+		board->rookMoves[1] = true;
+	if (y0 == 7 && x0 == 0)
+		board->rookMoves[2] = true;
+	if (y0 == 7 && x0 == 7)
+		board->rookMoves[3] = true;
 	
 	
 	if ((y1 == 7 && moved_piece == wPawn) || (y1 == 0 && moved_piece == bPawn)) {
 		// Promotion
 		place_at(board, y1, x1, select_promotion(is_white(moved_piece)));
-		flag = 2; // Code for promotion
+		flag = PROMOTION; // Code for promotion
 	} else if ((at(board, y0, x0) == (board->whites_turn ? wKing : bKing)) && x1 == x0 + 2) { 
 		// Castling
 		place_at(board, y1, x1 - 1, is_white(moved_piece) ? wRook : bRook);
+		place_at(board, y1, 7, none);
 		place_at(board, y1, x1, moved_piece);
-		flag = 3; // Code for castling
+		
+		flag = CASTLING; // Code for castling
 	} else if ((at(board, y0, x0) == (board->whites_turn ? wKing : bKing)) && x1 == x0 -2){
 		place_at(board, y1, x1 + 1, is_white(moved_piece) ? wRook : bRook);
 		place_at(board, y1, x1, moved_piece);
-		flag = 3; // Code for castling
-	} if (x0 != x1 && moved_piece == wPawn && at(board, y1, x1) == none) {
+		place_at(board, y1, 0, none);
+
+		flag = CASTLING; // Code for castling
+	} else if (x0 != x1 && moved_piece == wPawn && at(board, y1, x1) == none) {
 		// en-passant
 		place_at(board, y1-1, x1, none);
 		place_at(board, y1, x1, moved_piece);
-		flag = 4; // Code for en-passant
+		flag = EN_PASSANT; // Code for en-passant
 	} else if (x0 != x1 && moved_piece == bPawn && at(board, y1, x1) == none) {
 		place_at(board, y1+1, x1, none);
 		place_at(board, y1, x1, moved_piece);
-		flag = 4; // Code for en-passant
+		flag = EN_PASSANT; // Code for en-passant
 	} else if (at(board, y1, x1) != none){
 	//taking an enemy piece
 	place_at(board, y1, x1, moved_piece);
-	flag = 1; // Code for taking an enemy piece
+	flag = TAKE_PIECE; // Code for taking an enemy piece
 	} else {
 	// boring normal move
 	place_at(board, y1, x1, moved_piece);
-	flag = 0; // Code for normal move
+	flag = NORMAL_MOVE; // Code for normal move
 	}
 
 	if (at(board, y1, x1) == (board->whites_turn ? wPawn : bPawn) && absi(y1 - y0) == 2) {
@@ -209,9 +235,9 @@ int move_piece(ChessBoard* board, int y0, int x0, int y1, int x1) {
 	board->whites_turn = !board->whites_turn;
 
 	if(is_stalemate(board, board->whites_turn)) {
-		flag = 5; // Code for stalemate
+		flag = STALEMATE; // Code for stalemate
 	} else if (is_checkmate(board, board->whites_turn)){
-		flag = 6 + (int)board->whites_turn; // Code for checkmate, 7 if black wins, 6 if white wins
+		flag = WHITE_WINS + (int)board->whites_turn; // Code for checkmate, 7 if black wins, 6 if white wins
 	}
 	
 	
@@ -262,7 +288,7 @@ void get_moves_pawn(int* moves, ChessBoard *board, int y, int x, bool white) {
 
 		if (is_valid_place(y + 1, x) && at(board, y + 1, x) == none) 
 			add_move(moves, get_index(y + 1, x));
-		if (is_valid_place(y + 2, x) && at(board, y + 2, x) == none)
+		if (y == 1 && is_valid_place(y + 2, x) && at(board, y + 2, x) == none)
 			add_move(moves, get_index(y + 2, x));
 		if (is_valid_place(y + 1, x - 1) && is_black(at(board, y + 1, x - 1)))
 			add_move(moves, get_index(y + 1, x - 1));
@@ -279,7 +305,7 @@ void get_moves_pawn(int* moves, ChessBoard *board, int y, int x, bool white) {
 
 		if (is_valid_place(y - 1, x) && at(board, y - 1, x) == none)
 			add_move(moves, get_index(y - 1, x));
-		if (is_valid_place(y - 2, x) && at(board, y - 2, x) == none)
+		if (y==6 && is_valid_place(y - 2, x) && at(board, y - 2, x) == none)
 		add_move(moves, get_index(y - 2, x));
 		if (is_valid_place(y - 1, x - 1) && is_white(at(board, y - 1, x - 1)))
 			add_move(moves, get_index(y - 1, x - 1));
@@ -472,32 +498,32 @@ bool is_under_attack(ChessBoard* board, int y, int x, bool white) {
 	get_moves_horse(pieceMoves, board->board, y, x, white);
 
 	for (int i = 1; i <= pieceMoves[0]; ++i) {
-		if (white && at_index(board, pieceMoves[i]) == bHorse || !white && at_index(board, pieceMoves[i]) == wHorse)
+		if (white && chess_at_index(board, pieceMoves[i]) == bHorse || !white && chess_at_index(board, pieceMoves[i]) == wHorse)
 			return true;
 	}
 
 	get_moves_rook(pieceMoves, board->board, y, x, white);
 
 	for (int i = 1; i <= pieceMoves[0]; ++i) {
-		if ((white && (at_index(board, pieceMoves[i]) == bRook || at_index(board, pieceMoves[i]) == bQueen)) ||
-				(!white && (at_index(board, pieceMoves[i]) == wRook || at_index(board, pieceMoves[i]) == wQueen)))
+		if ((white && (chess_at_index(board, pieceMoves[i]) == bRook || chess_at_index(board, pieceMoves[i]) == bQueen)) ||
+				(!white && (chess_at_index(board, pieceMoves[i]) == wRook || chess_at_index(board, pieceMoves[i]) == wQueen)))
 			return true;
 	}
 
 	get_moves_bishop(pieceMoves, board->board, y, x, white);
 	for (int i = 1; i <= pieceMoves[0]; ++i) {
-		if (white && (at_index(board, pieceMoves[i]) == bBishop || at_index(board, pieceMoves[i]) == bQueen) ||
-				!white && (at_index(board, pieceMoves[i]) == wBishop || at_index(board, pieceMoves[i]) == wQueen))
+		if (white && (chess_at_index(board, pieceMoves[i]) == bBishop || chess_at_index(board, pieceMoves[i]) == bQueen) ||
+				!white && (chess_at_index(board, pieceMoves[i]) == wBishop || chess_at_index(board, pieceMoves[i]) == wQueen))
 			return true;
 	}
 
 	for (int i = -1; i <= 1; ++i)
-		for (int k = -1; i <= 1; ++i) {
+		for (int k = -1; k <= 1; ++k) {
 			if (is_valid_place(y + i, x + k))
 			{
-				if (white && at(board, y, x) == bKing)
+				if (white && at(board, y + i, x + k) == bKing)
 					return true;
-				if (!white && at(board, y, x) == wKing)
+				if (!white && at(board, y + i, x + k) == wKing)
 					return true;
 			}
 		}
@@ -509,7 +535,7 @@ bool is_checkmate(ChessBoard* board, bool whites_turn){
 	ChessBoard temp_board;
 	int moves[30];
 	for(int i = 0; i < 64; ++i)
-		if(at_index(board, i) == (board->whites_turn ? wKing : bKing)) {
+		if(chess_at_index(board, i) == (board->whites_turn ? wKing : bKing)) {
 			king_y = i / 8;
 			king_x = i % 8;
 			break;
@@ -518,7 +544,7 @@ bool is_checkmate(ChessBoard* board, bool whites_turn){
 	if (!is_under_attack(board, king_y, king_x, whites_turn)) return false;
 
 	for(int i = 0; i < 64; ++i){
-		if(is_ally_color(whites_turn, at_index(board, i))) {
+		if(is_ally_color(whites_turn, chess_at_index(board, i))) {
 			get_legal_moves(moves, board, i / 8, i % 8);
 			if (moves[0] != 0) return false;
 		}
@@ -528,7 +554,7 @@ bool is_checkmate(ChessBoard* board, bool whites_turn){
 bool is_stalemate(ChessBoard* board, bool whites_turn){
 	int king_y, king_x;
 	for(int i = 0; i < 64; ++i)
-		if(at_index(board, i) == (board->whites_turn ? wKing : bKing)) {
+		if(chess_at_index(board, i) == (board->whites_turn ? wKing : bKing)) {
 			king_y = i / 8;
 			king_x = i % 8;
 			break;
@@ -538,7 +564,7 @@ bool is_stalemate(ChessBoard* board, bool whites_turn){
 	
 	int moves[30];
 	for(int i = 0; i < 64; ++i)
-		if (is_ally_color(whites_turn, at_index(board, i))) {
+		if (is_ally_color(whites_turn, chess_at_index(board, i))) {
 			get_legal_moves(moves, board, i / 8, i % 8);
 			if (moves[0] != 0) return false;
 		}

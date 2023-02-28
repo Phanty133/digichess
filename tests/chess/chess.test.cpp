@@ -186,5 +186,11 @@ TEST(Chess, move_piece){
 	flag = move_piece(board, 2, 2, 3, 3); // 48
 	EXPECT_EQ(flag, 5);
 
+	// Game 7
+	empty_board(board);
+	place_at(board, 0, 0, wKing);
+	place_at(board, 1, 2, bKing);
+	flag = move_piece(board, 0, 0, 0, 1); // 48
+	EXPECT_EQ(flag, -1);
 
 }

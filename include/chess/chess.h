@@ -43,6 +43,7 @@ bool is_white(Piece piece);
 bool is_black(Piece piece);
 
 Piece at(ChessBoard *board, int y, int x);
+Piece chess_at_index(ChessBoard *board, int index);
 void place_at(ChessBoard *board, int y, int x, Piece piece);
 
 
@@ -55,6 +56,27 @@ void empty_board(ChessBoard* board);
 bool is_under_attack(ChessBoard *board, int y, int x, bool white);
 
 int move_piece(ChessBoard* board, int y0, int x0, int y1, int x1);
+
+
+typedef enum MoveFlag{
+	OUT_OF_BOARD,
+	NOT_YOUR_TURN,
+	ILLEGAL_MOVE,
+
+	NORMAL_MOVE,
+	TAKE_PIECE,
+	PROMOTION,
+	CASTLING,
+	EN_PASSANT,
+
+	STALEMATE,
+	WHITE_WINS,
+	BLACK_WINS
+} MoveFlag;
+
+extern bool is_illegal(MoveFlag flag);
+extern bool is_game_over(MoveFlag flag);
+
 
 bool is_checkmate(ChessBoard* board, bool whites_turn);
 bool is_stalemate(ChessBoard* board, bool whites_turn);
