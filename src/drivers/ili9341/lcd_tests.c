@@ -183,13 +183,13 @@ void lcd_image_test() {
 	p1.x = 200;
 	p1.y = 320;
 
-	lcd_draw_image(p, VIEWSONIC_8BIT);
+	lcd_draw_image(p, VIEWSONIC_8BIT());
 	delay_milli(1000);
-	lcd_draw_image(p, VIEWSONIC_4BIT);
+	lcd_draw_image(p, VIEWSONIC_4BIT());
 	delay_milli(1000);
 	lcd_draw_image_1bit(
 		p,
-		VIEWSONIC_1BIT,
+		VIEWSONIC_1BIT(),
 		rgb_24b_to_16b(0xFF0000),
 		rgb_24b_to_16b(0xAAFF00)
 	);
