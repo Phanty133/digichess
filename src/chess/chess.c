@@ -2,23 +2,30 @@
 #include "string.h"
 #include "math.h"
 
+/// @brief  Checks whether a set of moves leaves a king exposed to attack and removes all illegal moves
+/// @param moves 
+/// @param board 
+/// @param y0 
+/// @param x0 
+/// @param white 
 void check_legal_moves_king(int* moves, ChessBoard* board, int y0, int x0, bool white);
 
+/// @brief  Simple integer swap function
+/// @param a 
+/// @param b 
 void swap(int* a, int* b) {
 	int temp = *a;
 	*a = *b;
 	*b = temp;
 }
 
-
-void print_pos(int y, int x) {
-	//printf("%c%c", x + '1', y + 'a');
-}
-
 int get_index(short y, short x) {
 	return x + y * 8;
 }
 
+/// @brief  Adds a move to the array of moves 
+/// @param moves 
+/// @param index 
 void add_move(int* moves, int index) {
 	++moves[0];
 	moves[moves[0]] = index;
@@ -30,18 +37,43 @@ bool is_white(Piece piece) {
 bool is_black(Piece piece) {
 	return piece >= 7 && piece < 13;
 }
+
+/// @brief  Returns whether 2 pieces are enemies
+/// @param piece1 
+/// @param piece2 
+/// @return 
 bool is_enemy(Piece piece1, Piece piece2) {
 	return (is_white(piece1) && is_black(piece2)) || (is_white(piece2) && is_black(piece1));
 }
+
+/// @brief Checks whether a given piece is an enemy to specified color
+/// @param white 
+/// @param piece 
+/// @return 
 bool is_enemy_color(bool white, Piece piece) {
 	return white && is_black(piece) || !white && is_white(piece);
 }
+
+/// @brief  Returns whether 2 pieces are allies
+/// @param piece1 
+/// @param piece2 
+/// @return 
 bool is_ally(Piece piece1, Piece piece2) {
 	return (is_white(piece1) && is_white(piece2)) || (is_black(piece2) && is_black(piece1));
 }
+
+/// @brief Checks whether a given piece is an ally to specified color
+/// @param white 
+/// @param piece 
+/// @return 
 bool is_ally_color(bool white, Piece piece) {
 	return white && is_white(piece) || !white && is_black(piece);
 }
+
+/// @brief Checks whether a coordinate exists on a 8x8 chessboard
+/// @param y 
+/// @param x 
+/// @return 
 bool is_valid_place(int y, int x) {
 	return (x >= 0 && x < 8 && y >= 0 && y < 8);
 }
@@ -72,7 +104,6 @@ extern inline bool is_game_over(MoveFlag flag) {
 }
 
 
-// Takes a 64 byte char array and places pieces on it
 void arrange_board(ChessBoard* board) {
 	for (int i = 0; i < 8; ++i) {
 		for (int k = 0; k < 8; ++k) {
@@ -126,6 +157,9 @@ void empty_board(ChessBoard* board) {
 
 }
 
+/// @brief Copies state of one board into another
+/// @param target 
+/// @param source 
 void copy_board(ChessBoard* target, ChessBoard* source) { 
 	for (int i = 0; i < 64; ++i) 
 		place_at(target, i / 8, i % 8, chess_at_index(source, i));
@@ -152,6 +186,9 @@ bool contains_legal_move(int* legal_moves, int move) {
 	return false;
 }
 
+/// @brief Selects promotion option from the LCD menu
+/// @param white 
+/// @return 
 Piece select_promotion(bool white){
 	// TODO promotion selection
 	if (white) return wQueen;
@@ -245,6 +282,11 @@ int move_piece(ChessBoard* board, int y0, int x0, int y1, int x1) {
 	return flag;
 }
 
+/// @brief Returns set of moves a specifided piece can make without accounting for exposing the king
+/// @param moves 
+/// @param board 
+/// @param y 
+/// @param x 
 void get_moves(int* moves, ChessBoard *board, int y, int x){
 	switch (at(board, y, x)) {
 	case none:
@@ -275,12 +317,13 @@ void get_moves(int* moves, ChessBoard *board, int y, int x){
 		break;
 	}
 }
+
 // Returns an allocated array with all the Legal moves. The first element of the array will always contain the number of  moves
 void get_legal_moves(int* moves, ChessBoard *board, int y, int x) {
 	get_moves(moves, board, y, x);
 	check_legal_moves_king(moves, board, y, x, is_white(at(board, y, x)));
 }
-
+ 
 void get_moves_pawn(int* moves, ChessBoard *board, int y, int x, bool white) {
 	moves[0] = 0;
 
