@@ -91,9 +91,7 @@ void debug_ui_setup() {
 
 	lcd_draw_text("times", COMICSANSMS(), 16, p1, 0x0000, 0xFFFF);
 
-	// Post-draw touchscreen poll delay
-	lcd_wait_available();
-	delay_milli(650);
+	lcd_touch_init_postdraw();
 }
 
 int touch_counter = 0;
@@ -103,11 +101,9 @@ void debug_ui_loop() {
 	uint16_t touch_x;
 	uint16_t touch_y;
 
-	lcd_wait_available();
 	uint8_t touching = lcd_touch_read_coords(&touch_x, &touch_y, 0);
 
 	delay_milli(5);
-	lcd_select();
 
 	if (touching && !prev_loop_touched) {
 		prev_loop_touched = 1;
@@ -123,21 +119,17 @@ void debug_ui_loop() {
 			p1.x = 230;
 			p1.y = 220;
 
+			lcd_select();
 			lcd_draw_rect_filled(p0, p1, 0xFFFF);
 
 			char buf[8];
 			num2char(touch_counter, buf, 8);
 
-			uart_write("button press: ");
-			uart_write_line(buf);
-
 			p0.x = 100;
 			p0.y = 165;
 
 			lcd_draw_text(buf, COMICSANSMS(), 32, p0, 0, 0xFFFF);
-			// Post-draw touchscreen poll delay
-			lcd_wait_available();
-			delay_milli(650);
+			lcd_touch_init_postdraw();
 		}
 	} else if (!touching) {
 		prev_loop_touched = 0;

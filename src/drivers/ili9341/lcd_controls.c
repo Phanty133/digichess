@@ -3,11 +3,13 @@
 void lcd_select() {
 	// CS - LOW
 	LATBCLR = __LCD_CS_MASK;
+	PMCONSET = 0x8000;
 }
 
 void lcd_deselect() {
 	// CS - HIGH
 	LATBSET = __LCD_CS_MASK;
+	PMCONCLR = 0x8000;
 }
 
 void lcd_hw_reset() {

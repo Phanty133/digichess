@@ -193,13 +193,10 @@ bool lcd_touch_read_coords(
 	uint16_t* outY,
 	bool resetPins
 ) {
-	PMCONCLR = 0x8000; // Disable PMP module
 	uint16_t x, y;
 
 	bool xValid = lcd_touch_read_x(&x);
 	bool yValid = lcd_touch_read_y(&y);
-
-	PMCONSET = 0x8000; // Enable PMP module
 
 	if (!xValid || !yValid) return false;
 
@@ -224,8 +221,6 @@ bool lcd_touch_read_coords(
 }
 
 void lcd_touch_debug_raw() {
-	PMCONCLR = 0x8000; // Disable PMP module
-
 	while(1) {
 		uint16_t x, y;
 
@@ -279,4 +274,10 @@ void lcd_touch_debug_coords() {
 		uart_write("; Y: ");
 		uart_write_line(buf_y);
 	}
+}
+
+void lcd_touch_init_postdraw() {
+	lcd_wait_available();
+	delay_milli(__TOUCH_POLL_DELAY);
+	lcd_deselect();
 }

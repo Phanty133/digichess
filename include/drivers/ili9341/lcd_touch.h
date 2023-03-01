@@ -37,6 +37,8 @@
 #define __TOUCH_Y_MAX (915)
 #define __TOUCH_Y_DELTA (__TOUCH_Y_MAX - __TOUCH_Y_MIN)
 
+#define __TOUCH_POLL_DELAY 750
+
 /// @brief Initializes the ADC for reading the touchscreen
 void lcd_touch_init();
 
@@ -74,5 +76,8 @@ void lcd_touch_debug_raw();
 
 /// @brief Read and write the output of lcd_touch_read_coords() to UART every 100ms
 void lcd_touch_debug_coords();
+
+/// @brief Deselects the LCD after a delay period to make sure the touchscreen doesn't interfere
+void lcd_touch_init_postdraw();
 
 #endif
