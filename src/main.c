@@ -8,7 +8,9 @@
 // #define DEBUG_BOARD
 // #define DEBUG_LCD
 // #define DEBUG_BUZZER
-#define DEBUG_CHESS_GAME
+// #define DEBUG_CHESS_GAME
+// #define DEBUG_TOUCH
+#define DEBUG_UI
 
 #ifdef DEBUG_CHESS_GAME
 #include "chess/chess.h"
@@ -89,6 +91,14 @@ void setup() {
 	rook_place_position = -1;
 	chess_flag = NORMAL_MOVE;
 	error = 0;
+#endif
+
+#ifdef DEBUG_TOUCH
+	debug_touch_setup();
+#endif
+
+#ifdef DEBUG_UI
+	debug_ui_setup();
 #endif
 }
 
@@ -232,6 +242,13 @@ void loop() {
 	led_display(grid_get_led_data(), GRID_LED_COUNT);
 #endif
 
+#ifdef DEBUG_TOUCH
+	debug_touch_loop();
+#endif
+
+#ifdef DEBUG_UI
+	debug_ui_loop();
+#endif
 }
 
 int main() {

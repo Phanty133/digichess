@@ -33,6 +33,117 @@ void debug_lcd_setup() {
 	lcd_test_all();
 }
 
+void debug_touch_setup() {
+	lcd_init();
+	lcd_touch_init();
+	lcd_select();
+
+	LCD_Point p0, p1;
+	p0.x = 0;
+	p0.y = 0;
+	p1.x = LCD_WIDTH;
+	p1.y = LCD_HEIGHT;
+
+	lcd_draw_rect_filled(p0, p1, rgb_24b_to_16b(0x0055AA));
+
+	lcd_wait_available();
+	delay_milli(300);
+
+	lcd_touch_debug_raw();
+}
+
+void debug_touch_loop() {}
+
+void debug_ui_setup() {
+	lcd_init();
+	lcd_touch_init();
+	lcd_select();
+
+	lcd_clear();
+
+	LCD_Point p0, p1;
+	p0.x = 10;
+	p0.y = 50;
+	p1.x = p0.x + 220;
+	p1.y = p0.y + 50;
+
+	uint16_t bg_color = rgb_24b_to_16b(0x0044DD);
+
+	lcd_draw_rect_filled(p0, p1, bg_color);
+
+	p1.x = p0.x + 22;
+	p1.y = p0.y + 10;
+
+	lcd_draw_text("Press here", COMICSANSMS(), 18, p1, 0xFFFF, bg_color);
+
+	p1.x = 10;
+	p1.y = p0.y + 70;
+
+	lcd_draw_text("You've pressed", COMICSANSMS(), 16, p1, 0x0000, 0xFFFF);
+
+	p1.x = 100;
+	p1.y = p1.y + 45;
+
+	lcd_draw_text("0", COMICSANSMS(), 32, p1, 0x0000, 0xFFFF);
+
+	p1.x = 80;
+	p1.y = p1.y + 60;
+
+	lcd_draw_text("times", COMICSANSMS(), 16, p1, 0x0000, 0xFFFF);
+
+	// Post-draw touchscreen poll delay
+	lcd_wait_available();
+	delay_milli(650);
+}
+
+int touch_counter = 0;
+int prev_loop_touched = 0;
+
+void debug_ui_loop() {
+	uint16_t touch_x;
+	uint16_t touch_y;
+
+	lcd_wait_available();
+	uint8_t touching = lcd_touch_read_coords(&touch_x, &touch_y, 0);
+
+	delay_milli(5);
+	lcd_select();
+
+	if (touching && !prev_loop_touched) {
+		prev_loop_touched = 1;
+
+		if (touch_x >= 10 && touch_x <= 230 && touch_y >= 50 && touch_y <= 100) {
+			// lcd_touch_reset_pins(); // why does it work better without resets???
+			touch_counter++;
+
+			LCD_Point p0, p1;
+
+			p0.x = 10;
+			p0.y = 165;
+			p1.x = 230;
+			p1.y = 220;
+
+			lcd_draw_rect_filled(p0, p1, 0xFFFF);
+
+			char buf[8];
+			num2char(touch_counter, buf, 8);
+
+			uart_write("button press: ");
+			uart_write_line(buf);
+
+			p0.x = 100;
+			p0.y = 165;
+
+			lcd_draw_text(buf, COMICSANSMS(), 32, p0, 0, 0xFFFF);
+			// Post-draw touchscreen poll delay
+			lcd_wait_available();
+			delay_milli(650);
+		}
+	} else if (!touching) {
+		prev_loop_touched = 0;
+	}
+}
+
 void debug_buzzer_setup() {
 	buzzer_init();
 

@@ -90,7 +90,7 @@ void lcd_font_test() {
 
 	lcd_draw_text(
 		"abcdefgh",
-		COMICSANSMS,
+		COMICSANSMS(),
 		fontsize,
 		p0,
 		color_fg,
@@ -102,7 +102,7 @@ void lcd_font_test() {
 
 	lcd_draw_text(
 		"ijklmnopq",
-		COMICSANSMS,
+		COMICSANSMS(),
 		fontsize,
 		p0,
 		color_fg,
@@ -114,7 +114,7 @@ void lcd_font_test() {
 
 	lcd_draw_text(
 		"rstuvwxyz",
-		COMICSANSMS,
+		COMICSANSMS(),
 		fontsize,
 		p0,
 		color_fg,
@@ -126,7 +126,7 @@ void lcd_font_test() {
 
 	lcd_draw_text(
 		"ABCDEFGH",
-		COMICSANSMS,
+		COMICSANSMS(),
 		fontsize,
 		p0,
 		color_fg,
@@ -138,7 +138,7 @@ void lcd_font_test() {
 
 	lcd_draw_text(
 		"IJKLMNOP",
-		COMICSANSMS,
+		COMICSANSMS(),
 		fontsize,
 		p0,
 		color_fg,
@@ -150,7 +150,7 @@ void lcd_font_test() {
 
 	lcd_draw_text(
 		"QRSTUVW",
-		COMICSANSMS,
+		COMICSANSMS(),
 		fontsize,
 		p0,
 		color_fg,
@@ -162,7 +162,7 @@ void lcd_font_test() {
 
 	lcd_draw_text(
 		"XYZ",
-		COMICSANSMS,
+		COMICSANSMS(),
 		fontsize,
 		p0,
 		color_fg,
@@ -195,10 +195,6 @@ void lcd_image_test() {
 	);
 }
 
-void lcd_touch_test() {
-	lcd_clear();
-}
-
 void lcd_test_all() {
 	const int test_delay_ms = 5000;
 
@@ -212,7 +208,4 @@ void lcd_test_all() {
 	delay_milli(test_delay_ms);
 
 	lcd_image_test();
-	delay_milli(test_delay_ms);
-	
-	lcd_touch_test();
 }

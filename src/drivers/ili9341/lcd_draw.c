@@ -594,6 +594,11 @@ void lcd_draw_text(
 	uint16_t color_fg,
 	uint16_t color_bg
 ) {
+#ifdef QUICK_UPLOAD
+	// If the quick upload flag is set, don't draw text at all
+	return;
+#endif
+
 	float scale = ttf_get_scale(font, font_size_pt, LCD_PPI);
 
 	// Count the characters

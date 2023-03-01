@@ -18,9 +18,12 @@
 // X- - LCD_RS - A2 - Analog input
 
 #define __TOUCH_YP_MASK __LCD_CS_MASK // Port B
-#define __TOUCH_YM_MASK __LCD_D1_MASK // Port D
-#define __TOUCH_XP_MASK __LCD_D0_MASK // Port D
+#define __TOUCH_YM_MASK __LCD_D1_MASK // Port E
+#define __TOUCH_XP_MASK __LCD_D0_MASK // Port E
 #define __TOUCH_XM_MASK __LCD_DC_MASK // Port B
+
+#define __TOUCH_XM_ADC (5 << 16)
+#define __TOUCH_YP_ADC (9 << 16)
 
 #define __TOUCH_X_RESISTANCE (348) // Resistance between X- and X+
 #define __TOUCH_READ_DELAY 30 // microseconds
@@ -56,15 +59,11 @@ uint16_t lcd_touch_read_pressure(uint16_t x_val);
 
 /// @brief Read the X and Y touch positions on the screen.
 /// @brief The display must be selected with lcd_select() after read
-/// @param screen_width Screen width in pixels
-/// @param screen_height Screen height in pixels
 /// @param out_x Address to write the X value to
 /// @param out_y Address to write the Y value to
 /// @param reset_pins If true, resets D0, D1, CS, and RS pins for use with the LCD
 /// @return True if the screen is touched
 bool lcd_touch_read_coords(
-	uint16_t screen_width,
-	uint16_t screen_height,
 	uint16_t* out_x,
 	uint16_t* out_y,
 	bool reset_pins

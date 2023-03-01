@@ -30,12 +30,12 @@ static bool read_averaged_adc(uint16_t* val) {
 }
 
 static bool read_xm(uint16_t* val) {
-	AD1CHS = (8 << 16);
+	AD1CHS = __TOUCH_XM_ADC;
 	return read_averaged_adc(val);
 }
 
 bool read_yp(uint16_t* val) {
-	AD1CHS = (10 << 16);
+	AD1CHS = __TOUCH_YP_ADC;
 	return read_averaged_adc(val);
 }
 
@@ -59,8 +59,8 @@ void lcd_touch_init() {
 
 void lcd_touch_reset_pins() {
 	uint16_t digitalPinMask = __TOUCH_YM_MASK | __TOUCH_XP_MASK;
-	TRISDCLR = digitalPinMask;
-	LATDCLR = digitalPinMask;
+	TRISECLR = digitalPinMask;
+	LATECLR = digitalPinMask;
 
 	uint16_t analogPinMask = __TOUCH_YP_MASK | __TOUCH_XM_MASK;
 	AD1PCFGSET = analogPinMask;
@@ -79,13 +79,11 @@ bool lcd_touch_read_x(uint16_t* outX) {
 	// with floating control pins
 
 	// Set port D pins (X+, Y-)
-	TRISD = (TRISD | __TOUCH_YM_MASK) & (~__TOUCH_XP_MASK);
+	TRISE = (TRISE | __TOUCH_YM_MASK) & (~__TOUCH_XP_MASK);
 
 	// Pull X+ (D0) HIGH
 	// To avoid a situation where the bus is 0x01, which risks a software reset
-	// for god knows what reason, set the entire bus to 0xEF which is an
-	// undefined command. 0xEF instead of something like 0xFF because D4 
-	// is on a different port, so it's quicker to just set all port D pins
+	// for god knows what reason, set the entire bus to an undefined command.
 	// Seriously. Fuck this display. Never buy shit from Velleman.
 	LATE |= __LCD_PORTE_MASK;
 
@@ -118,7 +116,7 @@ bool lcd_touch_read_y(uint16_t* outY) {
 	// with floating control pins
 
 	// Set port D pins (X+, Y-)
-	TRISD = (TRISD | __TOUCH_XP_MASK) & (~__TOUCH_YM_MASK);
+	TRISE = (TRISE | __TOUCH_XP_MASK) & (~__TOUCH_YM_MASK);
 
 	// Pull Y- (D1) LOW
 	// For the reasons outlined in lcd_touch_read_x(), it's better to set the
@@ -126,7 +124,7 @@ bool lcd_touch_read_y(uint16_t* outY) {
 	// a valid command.
 	// LATDSET = __LCD_PORTD_MASK;
 	// LATDCLR = __TOUCH_YM_MASK;
-	LATE = (LATD | __LCD_PORTE_MASK) & (~(__LCD_D1_MASK));
+	LATE = (LATE | __LCD_PORTE_MASK) & (~__LCD_D1_MASK);
 
 	// Set port B pins (X-, Y+)
 	TRISB = (TRISB | __TOUCH_XM_MASK) & (~__TOUCH_YP_MASK);
@@ -153,9 +151,9 @@ bool lcd_touch_read_y(uint16_t* outY) {
 uint16_t lcd_touch_read_pressure(uint16_t x_val) {
 	// Pull X+ LOW
 	// Pull Y- HIGH
-	TRISDCLR = __TOUCH_XP_MASK + __TOUCH_YM_MASK;
-	LATDCLR = __TOUCH_XP_MASK;
-	LATDSET = __TOUCH_YM_MASK;
+	TRISECLR = __TOUCH_XP_MASK + __TOUCH_YM_MASK;
+	LATECLR = __TOUCH_XP_MASK;
+	LATESET = __TOUCH_YM_MASK;
 
 	// X- and Y+ to inputs
 	TRISBSET = __TOUCH_XM_MASK + __TOUCH_YP_MASK;
@@ -191,16 +189,17 @@ uint16_t lcd_touch_read_pressure(uint16_t x_val) {
 }
 
 bool lcd_touch_read_coords(
-	uint16_t screenWidth,
-	uint16_t screenHeight,
 	uint16_t* outX,
 	uint16_t* outY,
 	bool resetPins
 ) {
+	PMCONCLR = 0x8000; // Disable PMP module
 	uint16_t x, y;
 
 	bool xValid = lcd_touch_read_x(&x);
 	bool yValid = lcd_touch_read_y(&y);
+
+	PMCONSET = 0x8000; // Enable PMP module
 
 	if (!xValid || !yValid) return false;
 
@@ -216,8 +215,8 @@ bool lcd_touch_read_coords(
 	// float x_fract = (float)(x - __TOUCH_X_MIN) / __TOUCH_X_DELTA;
 	// float y_fract = (float)(y - __TOUCH_Y_MIN) / __TOUCH_Y_DELTA;
 
-	*outX = ((x - __TOUCH_X_MIN) * screenWidth) / __TOUCH_X_DELTA;
-	*outY = ((y - __TOUCH_Y_MIN) * screenHeight) / __TOUCH_Y_DELTA;
+	*outX = ((x - __TOUCH_X_MIN) * LCD_WIDTH) / __TOUCH_X_DELTA;
+	*outY = ((y - __TOUCH_Y_MIN) * LCD_HEIGHT) / __TOUCH_Y_DELTA;
 
 	if (resetPins) lcd_touch_reset_pins();
 
@@ -225,6 +224,8 @@ bool lcd_touch_read_coords(
 }
 
 void lcd_touch_debug_raw() {
+	PMCONCLR = 0x8000; // Disable PMP module
+
 	while(1) {
 		uint16_t x, y;
 
@@ -260,7 +261,7 @@ void lcd_touch_debug_coords() {
 
 	while (1) {
 		delay_milli(100);
-		bool isTouching = lcd_touch_read_coords(240, 320, &x, &y, false);
+		bool isTouching = lcd_touch_read_coords(&x, &y, false);
 
 		if (!isTouching) {
 			uart_write_line("Not touching!");

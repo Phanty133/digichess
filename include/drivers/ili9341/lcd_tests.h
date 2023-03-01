@@ -9,10 +9,10 @@
 #include "drivers/ili9341/lcd_draw.h"
 
 // Files
-#include "images/viewsonic_8bit.bmp.h"
-#include "images/viewsonic_4bit.bmp.h"
-#include "images/viewsonic_1bit.bmp.h"
-#include "fonts/ComicSansMS.ttf.h"
+#include "files/images/viewsonic_8bit.bmp.h"
+#include "files/images/viewsonic_4bit.bmp.h"
+#include "files/images/viewsonic_1bit.bmp.h"
+#include "files/fonts/ComicSansMS.ttf.h"
 
 /// @brief LCD setup and orientation test
 void lcd_setup_test();
@@ -25,9 +25,6 @@ void lcd_font_test();
 
 /// @brief LCD .bmp image rendering test
 void lcd_image_test();
-
-/// @brief LCD touchscreen test
-void lcd_touch_test();
 
 /// @brief Runs all LCD tests
 void lcd_test_all();
