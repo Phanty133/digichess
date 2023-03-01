@@ -9,6 +9,8 @@
 #include "buzzer.h"
 #include "chess/chess.h"
 #include "grid.h"
+#include "gui/gui.h"
+#include "gui/gui_register_menus.h"
 #include "files/fonts/ComicSansMS.ttf.h"
 
 void debug_board_setup();

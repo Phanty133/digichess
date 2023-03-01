@@ -1,9 +1,55 @@
 #include "gui/gui.h"
 
-uint8_t poll_touchscreen(GUIState* state) {
+static GUI_State state;
+static uint8_t prev_loop_touched = 0;
 
+static GUI_Menu* get_active() {
+	return &state.menus[state.active_menu];
 }
 
-void set_menu(GUIState* state, MenuID menu) {
+static void draw_active_menu() {
+	get_active()->draw_func();
+}
 
+void gui_update() {
+	GUI_Menu* menu = get_active();
+	uint8_t screen_updated = 0;
+
+	screen_updated |= menu->update_func();
+
+	uint16_t touch_x;
+	uint16_t touch_y;
+
+	uint8_t touching = lcd_touch_read_coords(&touch_x, &touch_y, 0);
+
+	if (touching) {
+		uart_write_line("touch");
+
+		for (int i = 0; i < menu->button_count; i++) {
+			GUI_MenuButton* btn = &menu->buttons[i];
+
+			if (
+				(btn->hold || (!btn->hold && !prev_loop_touched))
+				&& touch_x >= btn->x
+				&& touch_x <= btn->x + btn->w
+				&& touch_y >= btn->y
+				&& touch_y <= btn->y + btn->h
+			) {
+				screen_updated |= btn->callback();
+			}
+		}
+	} else if (!touching && prev_loop_touched) {
+		prev_loop_touched = 0;
+	}
+
+	if (screen_updated) lcd_touch_init_postdraw();
+}
+
+void gui_set_menu(GUI_MenuID menu) {
+	state.active_menu = menu;
+	draw_active_menu();
+}
+
+void gui_register_menu(GUI_MenuID id, GUI_Menu* menu) {
+	memory_copy(&state.menus[id], menu, sizeof(GUI_Menu));
 }
