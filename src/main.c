@@ -53,8 +53,8 @@
 	}
 
 void get_AI_move() {
-	AI_selected_piece = 1;
-	AI_targetted_piece = 2;
+	AI_selected_piece = 58;
+	AI_targetted_piece = 57;
 }
 
 void draw_chess() {
@@ -138,20 +138,22 @@ void draw_chess() {
 	led_display(grid_get_led_data(), GRID_LED_COUNT);
 }
 void check_movement() {
+	if (is_game_over(chess_flag))
+		return;
 	grid_reset_sensors();
 	
 	if (AI_turn) {
-		// if (selected_piece != -1 && selected_piece != AI_selected_piece){	
-		// 	error = 1;
-		// 	grid_set_color(4, 4, 0xffffff, 1);
-		// }
-
+		grid_reset_sensors();
 		for (int r = 0; r < GRID_ROWS; r++){
 			for (int c = 0; c < GRID_COLS; c++) {
 				placed_pieces_curr[r][c] = !grid_read_square(r, c);
+				grid_set_color(5, 5, 0xff00ff, 1);
 				if (placed_pieces_curr[r][c] == placed_pieces_last[r][c]) 
 					continue;
+				grid_set_color(0, 0, 0xff00ff, 1);
+				delay_milli(2000);
 				
+
 				if (selected_piece == -1 && !placed_pieces_curr[r][c]) {
 					selected_piece = get_grid_index(r, c);
 					error = selected_piece == AI_selected_piece;
@@ -162,15 +164,17 @@ void check_movement() {
 				} else if (selected_piece != -1 && placed_pieces_curr[r][c] && get_grid_index(r, c) != AI_targetted_piece) {
 					error = 1;
 				} else if (get_grid_index(r, c) == AI_targetted_piece && placed_pieces_curr[r][c]) {
+					chess_flag = move_piece(&chess_board, AI_selected_piece / 8, AI_selected_piece % 8,
+					AI_targetted_piece / 8, AI_targetted_piece % 8);
 					AI_turn = 0;
 					AI_targetted_piece = -1;
 					AI_selected_piece = -1;
 					selected_piece = -1;
 				}
 			}
-			update_placed_pieces();
-			return;
 		}
+		update_placed_pieces();
+		return;
 	}
 	for (int r = 0; r < GRID_ROWS; r++){
 		for (int c = 0; c < GRID_COLS; c++) {
@@ -256,10 +260,10 @@ void setup() {
 
 	grid_reset_sensors();
 	empty_board(&chess_board);
-	place_at(&chess_board, 0, 4, wKing);
-	place_at(&chess_board, 3, 0, bPawn);
-	place_at(&chess_board, 1, 1, wPawn);
-	place_at(&chess_board, 0, 1, bKing);
+	place_at(&chess_board, 1, 0, wKing);
+	place_at(&chess_board, 1, 7, bRook);
+	place_at(&chess_board, 7, 2, bRook);
+	place_at(&chess_board, 7, 4, bKing);
 	chess_board.whites_turn = true;
 	chess_board.rookMoves[0] = false;
 	chess_board.rookMoves[1] = false;
