@@ -2,7 +2,8 @@
 #define __MENU_SPLASH_H
 
 #include "drivers/ili9341/lcd_draw.h"
-#include "files/fonts/ComicSansMS.ttf.h"
+#include "files/images/logo.bmp.h"
+#include "files/images/viewsonic_1bit.bmp.h"
 #include "delay.h"
 #include "gui/gui.h"
 

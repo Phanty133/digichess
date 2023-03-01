@@ -16,6 +16,8 @@
 void debug_board_setup();
 void debug_board_loop();
 
+void debug_board_grid_setup();
+
 void debug_lcd_setup();
 // void debug_lcd_loop();
 

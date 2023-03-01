@@ -6,6 +6,7 @@
 #include "tests.h"
 
 // #define DEBUG_BOARD
+// #define DEBUG_BOARD_GRID
 // #define DEBUG_LCD
 // #define DEBUG_BUZZER
 // #define DEBUG_CHESS_GAME
@@ -16,6 +17,7 @@
 #include "chess/chess.h"
 #include "grid.h"
 #endif
+#define DEBUG_UI
 
 #ifdef DEBUG_CHESS_GAME
 	int counter = 0;
@@ -60,6 +62,10 @@ void setup() {
 
 #ifdef DEBUG_BOARD
 	debug_board_setup();
+#endif
+
+#ifdef DEBUG_BOARD_GRID
+	debug_board_grid_setup();
 #endif
 
 #ifdef DEBUG_CHESS_GAME

@@ -13,12 +13,12 @@ void menu_splash_draw() {
 	lcd_clear();
 
 	LCD_Point p;
-	p.x = 12;
-	p.y = 100;
+	p.x = 30;
+	p.y = 70;
 
-	lcd_draw_text("DigiChess", COMICSANSMS(), 24, p, 0, 0xFFFF);
+	lcd_draw_image(p, LOGO());
 
-	delay_milli(2000);
+	delay_milli(5000);
 	gui_set_menu(MENU_TEST);
 }
 
