@@ -8,9 +8,9 @@
 // #define DEBUG_BOARD
 // #define DEBUG_LCD
 // #define DEBUG_BUZZER
-#define DEBUG_CHESS_GAME
+// #define DEBUG_CHESS_GAME
 // #define DEBUG_TOUCH
-// #define DEBUG_UI
+#define DEBUG_UI
 
 #ifdef DEBUG_CHESS_GAME
 #include "chess/chess.h"

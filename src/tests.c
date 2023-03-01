@@ -83,7 +83,7 @@ void debug_ui_setup() {
 	lcd_clear();
 
 	gui_register_all_menus();
-	gui_set_menu(MENU_SPLASH);
+	gui_set_menu(MENU_PROMOTION);
 }
 
 void debug_ui_loop() {

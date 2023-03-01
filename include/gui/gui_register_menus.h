@@ -3,6 +3,7 @@
 
 #include "gui/menus/menu_splash.h"
 #include "gui/menus/menu_test.h"
+#include "gui/menus/menu_promotion.h"
 
 void gui_register_all_menus();
 
