@@ -28,7 +28,7 @@ void debug_ui_setup();
 void debug_ui_loop();
 
 void debug_buzzer_setup();
-// void debug_buzzer_loop();
+void debug_buzzer_loop();
 
 void debug_chess_setup();
 void debug_chess_loop();

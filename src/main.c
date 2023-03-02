@@ -5,9 +5,9 @@
 #include "sys_defines.h"
 #include "tests.h"
 
-#define DEBUG_BOARD
+// #define DEBUG_BOARD
 // #define DEBUG_LCD
-// #define DEBUG_BUZZER
+#define DEBUG_BUZZER
 // #define DEBUG_CHESS_GAME
 // #define DEBUG_TOUCH
 // #define DEBUG_UI
@@ -299,6 +299,10 @@ void setup() {
 void loop() {
 #ifdef DEBUG_BOARD
 	debug_board_loop();
+#endif
+
+#ifdef DEBUG_BUZZER
+	debug_buzzer_loop();
 #endif
 
 #ifdef DEBUG_CHESS_GAME

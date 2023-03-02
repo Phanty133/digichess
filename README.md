@@ -17,3 +17,11 @@ To compile without uploading any file, set the make `DEFINES` variable to `QUICK
 ### Adding files
 
 To add a file to the microcontroller, run `python tools/generate_file_header.py <PATH_TO_FILE> <OUTPUT_DIR_IN_INCLUDES>`. A header file containing a const byte array with the file data will be generated in the specified directory in includes.
+
+## Notes
+
+### Timers used
+- **Timer 2**: Grid update
+- **Timer 3**: Buzzer
+- **Timer 4**: -
+- **Timer 5**: -

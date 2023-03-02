@@ -84,18 +84,11 @@ void debug_ui_loop() {
 
 void debug_buzzer_setup() {
 	buzzer_init();
+	buzzer_timed(2000);
+}
 
-	buzzer_on();
-	delay_milli(500);
-	buzzer_off();
-	delay_milli(500);
-	buzzer_on();
-	delay_milli(500);
-	buzzer_off();
-	delay_milli(500);
-	buzzer_on();
-	delay_milli(500);
-	buzzer_off();
+void debug_buzzer_loop() {
+	buzzer_loop_update();
 }
 
 void debug_chess_setup() {
