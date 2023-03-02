@@ -1,6 +1,6 @@
 #include "gui/menus/menu_victory.h"
 
-static uint8_t player_victory = 0; // TODO: Integrate with game
+static uint8_t player_victory = 0; // 0 - stalemate, 1 - blue wins, 2 - red wins
 
 static void on_play_again_click() {
 	software_reset();
@@ -50,7 +50,7 @@ void menu_victory_draw() {
 	p0.y = 70;
 
 	lcd_draw_text(
-		player_victory ? "Blue wins!" : "Red wins!",
+		player_victory ? "Stalemate" : (player_victory - 1 ? "Red wins!" : "Blue wins!"),
 		COMICSANSMS(),
 		48,
 		p0,

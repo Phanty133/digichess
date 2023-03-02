@@ -2,6 +2,11 @@
 #define __CHESS_H
 
 #include <stdbool.h>
+#include "string.h"
+#include "math.h"
+#include "gui/gui.h"
+#include "game_logic.h"
+#include "memory.h"
 
 typedef enum Piece{
     none,
@@ -166,5 +171,6 @@ void get_moves_king(int* moves, ChessBoard *board, int y, int x, bool white);
 /// @brief Returns an allocated array with all the legal moves of a piece located at specified coordinates. 
 /// The first element of the array will always contain the number of legal moves
 void get_legal_moves(int* moves, ChessBoard *board, int y, int x);
+
 
 #endif

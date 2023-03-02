@@ -1,66 +1,70 @@
-#include <pic32mx.h>
-#include <stdint.h>
-#include "uart.h"
-#include "delay.h"
-#include "sys_defines.h"
-#include "tests.h"
 #include "game_logic.h"
 
-// #define DEBUG_BOARD
-// #define DEBUG_LCD
-// #define DEBUG_BUZZER
-// #define DEBUG_CHESS_GAME
-// #define DEBUG_TOUCH
-// #define DEBUG_UI
-#define FULL_GAME
+extern void set_promotion_available();
 
-#ifdef DEBUG_CHESS_GAME
-#include "chess/chess.h"
-#include "grid.h"
-#endif
 
-#ifdef DEBUG_CHESS_GAME
-	int counter = 0;
-	
-	int debug1 = 0;
-	int debug2 = 0;
+static int AI_mode;
+static int selected_promotion;
+static int blue_turn;
 
-	ChessBoard chess_board;
-	MoveFlag chess_flag;
-	bool placed_pieces_last[GRID_ROWS][GRID_COLS];
-	bool placed_pieces_curr[GRID_ROWS][GRID_COLS];
-	int error;
+// static int blue_turn;
+// static int selected_promotion;
+int counter = 0;
+int debug1 = 0;
+int debug2 = 0;
+int moves[30];
+ChessBoard chess_board;
+MoveFlag chess_flag;
+bool placed_pieces_last[GRID_ROWS][GRID_COLS];
+bool placed_pieces_curr[GRID_ROWS][GRID_COLS];
+int error;
 
-	int selected_piece;
-	int targeted_piece;
+int selected_piece;
+int targeted_piece;
 
-	int AI_selected_piece;
-	int AI_targetted_piece;
+int AI_selected_piece;
+int AI_targetted_piece;
 
-	int moves[30];
-	bool AI_color;
-	bool AI_turn;
-	bool AI_mode;
-	void update_placed_pieces() {
-		for (int r = 0; r < GRID_ROWS; ++r)
-			for (int c = 0; c < GRID_COLS; ++c)
-				placed_pieces_last[r][c] = placed_pieces_curr[r][c];
-	}
-	int get_grid_index(int r, int c) {
-		return r + GRID_ROWS * ((r % 2) ? ((GRID_COLS - 1 - c)) : (c));
-	}
+void set_blue_turn(int turn) {
+	blue_turn = turn;
+}
+int get_blue_turn() {
+	return blue_turn;
+}
 
-	int get_chess_index(int y, int x) {
+void set_AI_mode(int mode) {
+	AI_mode = mode;
+}
+
+int get_AI_mode() {
+	return AI_mode;
+}
+
+void set_selected_promotion(int piece) {
+	selected_promotion = piece;
+}
+
+int get_selected_promotion() {
+	return selected_promotion;
+}
+
+void update_placed_pieces() {
+	for (int r = 0; r < GRID_ROWS; ++r)
+		for (int c = 0; c < GRID_COLS; ++c)
+			placed_pieces_last[r][c] = placed_pieces_curr[r][c];
+}
+
+int get_grid_index(int r, int c) {
+	return r + GRID_ROWS * ((r % 2) ? ((GRID_COLS - 1 - c)) : (c));
+}
+
+int get_chess_index(int y, int x) {
 		return y * 8 + x;
-	}
+}
 
 void get_AI_move() {
 	AI_selected_piece = 58;
 	AI_targetted_piece = 57;
-}
-
-void set_game_mode(bool is_AI_mode) {
-	AI_mode = is_AI_mode;
 }
 
 void draw_chess() {
@@ -148,11 +152,16 @@ void check_movement() {
 		return;
 	grid_reset_sensors();
 	
-	if (AI_turn) {
+	if (AI_mode != 0) {
+		grid_set_color(0, 0, 0x0f000f, 1);
+		delay_milli(1000);
+	}
+
+	if (AI_mode && !blue_turn) {
 		grid_reset_sensors();
 		for (int r = 0; r < GRID_ROWS; r++){
 			for (int c = 0; c < GRID_COLS; c++) {
-				placed_pieces_curr[r][c] = !grid_read_square(r, c);
+				placed_pieces_curr[r][c] = grid_read_square(r, c);
 				grid_set_color(5, 5, 0xff00ff, 1);
 				if (placed_pieces_curr[r][c] == placed_pieces_last[r][c]) 
 					continue;
@@ -172,10 +181,13 @@ void check_movement() {
 				} else if (get_grid_index(r, c) == AI_targetted_piece && placed_pieces_curr[r][c]) {
 					chess_flag = move_piece(&chess_board, AI_selected_piece / 8, AI_selected_piece % 8,
 					AI_targetted_piece / 8, AI_targetted_piece % 8);
-					AI_turn = 0;
+					if (chess_flag != PROMOTION)
+						selected_promotion = -1;
+					blue_turn = !blue_turn;
 					AI_targetted_piece = -1;
 					AI_selected_piece = -1;
 					selected_piece = -1;
+					gui_update();
 				}
 			}
 		}
@@ -184,7 +196,7 @@ void check_movement() {
 	}
 	for (int r = 0; r < GRID_ROWS; r++){
 		for (int c = 0; c < GRID_COLS; c++) {
-			placed_pieces_curr[r][c] = !grid_read_square(r, c);
+			placed_pieces_curr[r][c] = grid_read_square(r, c);
 			if (placed_pieces_curr[r][c] == placed_pieces_last[r][c]) 
 				continue;
 
@@ -229,10 +241,13 @@ void check_movement() {
 					selected_piece = -1;
 					moves[0] = 0;
 				}
+				blue_turn = !blue_turn;
+				gui_update();
 				if (AI_mode) {
-					AI_turn = true;
 					get_AI_move();
 				}
+				if (chess_flag)
+					selected_promotion = -1;
 			} else if (selected_piece != -1 && targeted_piece == -1 && !placed_pieces_curr[r][c]) {
 				targeted_piece = get_grid_index(r, c);
 			}
@@ -242,101 +257,47 @@ void check_movement() {
 	update_placed_pieces();
 }
 
-#endif
-
-void setup() {
-	uart_begin(115200);
-
-#ifdef DEBUG_BUZZER
-	debug_buzzer_setup();
-#endif
-	
-#ifdef DEBUG_LCD
-	debug_lcd_setup();
-#endif
-
-#ifdef DEBUG_BOARD
-	debug_board_setup();
-#endif
-
-#ifdef DEBUG_CHESS_GAME
+void game_logic_setup() { 
+	uart_write_line("Chess setup started\n");
 	grid_init();
-	TRISFCLR = GRID_POWER_MASK;
-	LATFCLR = GRID_POWER_MASK;
+	arrange_board(&chess_board);
 
-	grid_reset_sensors();
-	empty_board(&chess_board);
-	place_at(&chess_board, 1, 0, wKing);
-	place_at(&chess_board, 1, 7, bRook);
-	place_at(&chess_board, 7, 2, bRook);
-	place_at(&chess_board, 7, 4, bKing);
-	chess_board.whites_turn = true;
-	chess_board.rookMoves[0] = false;
-	chess_board.rookMoves[1] = false;
-	chess_board.rookMoves[2] = false;
-	chess_board.rookMoves[3] = false;
+	uint8_t (*grid_state)[8] = (uint8_t (*)[8])grid_get_state();
+
 	// place_at(&chess_board, 1, 4, wKing);
 	for (int r = 0; r < GRID_ROWS; r++) {
 		for(int c = 0; c < GRID_COLS; c++) {
-			placed_pieces_last[r][c] = !grid_read_square(r, c);//(chess_at_index(&chess_board, get_grid_index(r, c)) != none);
+			placed_pieces_last[r][c] = grid_state[r][c];//(chess_at_index(&chess_board, get_grid_index(r, c)) != none);
 			grid_set_color(r, c, chess_at_index(&chess_board, get_grid_index(r, c)) ? 0x000008 : 0, 0); 	
 		}
 	}
 	led_display(grid_get_led_data(), GRID_LED_COUNT);
+	
+	lcd_init();
+	lcd_touch_init();
+	lcd_select();
+
+	// gui_set_menu(MENU_SPLASH);
+	// delay_milli(3000);
+
+	gui_set_menu(MENU_MODE);
+	AI_mode = -1;
+	while (AI_mode == -1){
+		gui_update();
+	}
+
 	selected_piece = -1;
 	targeted_piece = -1;
+	
 	chess_flag = NORMAL_MOVE;
 	error = 0;
-	AI_mode = true;
-	AI_color = true;
-	AI_turn = AI_mode ? !AI_color : false;
+
+	selected_promotion = -1;
+	blue_turn = true;
 	AI_selected_piece = AI_targetted_piece = -1;
-#endif
-
-#ifdef DEBUG_TOUCH
-	debug_touch_setup();
-#endif
-
-#ifdef DEBUG_UI
-	debug_ui_setup();
-#endif
-
-#ifdef FULL_GAME
-	game_logic_setup();
-#endif
 }
 
-void loop() {
-#ifdef DEBUG_BOARD
-	debug_board_loop();
-#endif
-
-#ifdef DEBUG_BUZZER
-	debug_buzzer_loop();
-#endif
-
-#ifdef DEBUG_CHESS_GAME
+void game_logic_loop() {
 	check_movement();
 	draw_chess();
-#endif
-
-#ifdef DEBUG_TOUCH
-	debug_touch_loop();
-#endif
-
-#ifdef DEBUG_UI
-	debug_ui_loop();
-#endif
-
-#ifdef FULL_GAME
-	game_logic_loop();
-#endif
-}
-
-int main() {
-	
-	setup();
-	while (1) loop();
-
-	return 0;
 }
