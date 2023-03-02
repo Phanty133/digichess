@@ -22,7 +22,7 @@ uint8_t on_button_click() {
 	p0.x = 100;
 	p0.y = 165;
 
-	lcd_draw_text(buf, COMICSANSMS(), 32, p0, 0, 0xFFFF);
+	lcd_draw_text(buf, COMICSANSMS(), 64, p0, 0, 0xFFFF);
 
 	return 1;
 }
@@ -62,22 +62,22 @@ void menu_test_draw() {
 	p1.x = p0.x + 22;
 	p1.y = p0.y + 10;
 
-	lcd_draw_text("Press here", COMICSANSMS(), 18, p1, 0xFFFF, bg_color);
+	lcd_draw_text("Press here", COMICSANSMS(), 36, p1, 0xFFFF, bg_color);
 
 	p1.x = 10;
 	p1.y = p0.y + 70;
 
-	lcd_draw_text("You've pressed", COMICSANSMS(), 16, p1, 0x0000, 0xFFFF);
+	lcd_draw_text("You've pressed", COMICSANSMS(), 32, p1, 0x0000, 0xFFFF);
 
 	p1.x = 100;
 	p1.y = p1.y + 45;
 
-	lcd_draw_text("0", COMICSANSMS(), 32, p1, 0x0000, 0xFFFF);
+	lcd_draw_text("0", COMICSANSMS(), 64, p1, 0x0000, 0xFFFF);
 
 	p1.x = 80;
 	p1.y = p1.y + 60;
 
-	lcd_draw_text("times", COMICSANSMS(), 16, p1, 0x0000, 0xFFFF);
+	lcd_draw_text("times", COMICSANSMS(), 32, p1, 0x0000, 0xFFFF);
 
 	lcd_touch_init_postdraw();
 }

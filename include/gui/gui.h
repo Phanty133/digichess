@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include "memory.h"
 #include "uart.h"
+#include "drivers/ili9341/lcd_controls.h"
 
 // int promotion_started = 0;
 // int promotion_selected = 0;
@@ -12,8 +13,11 @@
 /// @brief All possible menus
 typedef enum {
 	MENU_SPLASH,
-	MENU_TEST,
+	MENU_MODE,
+	MENU_GAME,
 	MENU_PROMOTION,
+	MENU_VICTORY,
+	MENU_TEST,
 	NUM_OF_MENUS ///< Used to count the number of menus. All menus must be added before this.
 } GUI_MenuID;
 

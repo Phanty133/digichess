@@ -4,6 +4,11 @@
 #include <stdint.h>
 #include "gui/gui.h"
 #include "drivers/ili9341/lcd_draw.h"
+#include "gui/menu_defines.h"
+#include "files/images/queen.bmp.h"
+#include "files/images/knight.bmp.h"
+#include "files/images/rook.bmp.h"
+#include "files/images/bishop.bmp.h"
 
 void menu_promotion_setup();
 void menu_promotion_draw();

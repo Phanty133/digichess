@@ -1,53 +1,76 @@
 #include "gui/menus/menu_promotion.h"
 
+uint8_t on_queen_click() {
+	return 0;
+}
 
-uint8_t on_selection_click() {
-	return 1;
+uint8_t on_knight_click() {
+	return 0;
+}
+
+uint8_t on_rook_click() {
+	return 0;
+}
+
+uint8_t on_bishop_click() {
+	return 0;
+}
+
+uint8_t on_cancel_click() {
+	gui_set_menu(MENU_GAME);
 }
 
 void menu_promotion_setup() {
 	GUI_Menu menu;
 	menu.draw_func = menu_promotion_draw;
 	menu.update_func = menu_promotion_update;
-	menu.button_count = 4;
+	menu.button_count = 5;
 
 	GUI_MenuButton queen;
-	queen.x = 10;
-	queen.y = 70;
-	queen.w = 220;
-	queen.h = 50;
-	queen.callback = on_selection_click;
+	queen.x = 20;
+	queen.y = 55;
+	queen.w = 200;
+	queen.h = 45;
+	queen.callback = on_queen_click;
 	queen.hold = 0;
 
 	GUI_MenuButton rook;
-	rook.x = 10;
-	rook.y = 140;
-	rook.w = 220;
-	rook.h = 50;
-	rook.callback = on_selection_click;
+	rook.x = 20;
+	rook.y = 165;
+	rook.w = 200;
+	rook.h = 45;
+	rook.callback = on_rook_click;
 	rook.hold = 0;
 	
 	GUI_MenuButton bishop;
-	bishop.x = 10;
-	bishop.y = 210;
-	bishop.w = 220;
-	bishop.h = 50;
-	bishop.callback = on_selection_click;
+	bishop.x = 20;
+	bishop.y = 220;
+	bishop.w = 200;
+	bishop.h = 45;
+	bishop.callback = on_bishop_click;
 	bishop.hold = 0;
 	
-	GUI_MenuButton horse;
-	horse.x = 10;
-	horse.y = 280;
-	horse.w = 220;
-	horse.h = 50;
-	horse.callback = on_selection_click;
-	horse.hold = 0;
+	GUI_MenuButton knight;
+	knight.x = 20;
+	knight.y = 110;
+	knight.w = 200;
+	knight.h = 45;
+	knight.callback = on_knight_click;
+	knight.hold = 0;
+
+	GUI_MenuButton cancel;
+	cancel.x = 20;
+	cancel.y = 275;
+	cancel.w = 200;
+	cancel.h = 40;
+	cancel.callback = on_cancel_click;
+	cancel.hold = 0;
 	
 	menu.buttons[0] = queen;
 	menu.buttons[1] = rook;
 	menu.buttons[2] = bishop;
-	menu.buttons[3] = horse;
-
+	menu.buttons[3] = knight;
+	menu.buttons[4] = cancel;
 
 	gui_register_menu(MENU_PROMOTION, &menu);
 }
@@ -55,86 +78,104 @@ void menu_promotion_setup() {
 void menu_promotion_draw() {
 	lcd_clear();
 
-	/// Queen 
 	LCD_Point p0, p1;
-	p0.x = 10;
-	p0.y = 70;
-	p1.x = p0.x + 220;
-	p1.y = p0.y + 50;
 
-	uint16_t bg_color = rgb_24b_to_16b(0x0044DD);
+	// Title bar
+	p0.x = 0;
+	p0.y = 0;
+	p1.x = LCD_WIDTH;
+	p1.y = 45;
 
-	lcd_draw_rect_filled(p0, p1, bg_color);
+	lcd_draw_rect_filled(p0, p1, MENU_COLOR_GREEN);
 
-	p1.x = p0.x + 20;
-	p1.y = p0.y + 10;
+	p0.x = 20;
+	p0.y = 55;
+	p1.x = 220;
+	p1.y = 100;
 
-	lcd_draw_text("Queen", COMICSANSMS(), 18, p1, 0xFFFF, bg_color);
+	lcd_draw_rect_filled(p0, p1, MENU_COLOR_BLUE);
 
-	// Rook
-	p0.x = 10;
-	p0.y = 140;
-	p1.x = p0.x + 220;
-	p1.y = p0.y + 50;
+	p0.x = 20;
+	p0.y = 110;
+	p1.x = 220;
+	p1.y = 155;
 
-	bg_color = rgb_24b_to_16b(0x0044DD);
+	lcd_draw_rect_filled(p0, p1, MENU_COLOR_BLUE);
 
-	lcd_draw_rect_filled(p0, p1, bg_color);
+	p0.x = 20;
+	p0.y = 165;
+	p1.x = 220;
+	p1.y = 210;
 
-	p1.x = p0.x + 20;
-	p1.y = p0.y + 10;
+	lcd_draw_rect_filled(p0, p1, MENU_COLOR_BLUE);
 
-	lcd_draw_text("Rook", COMICSANSMS(), 18, p1, 0xFFFF, bg_color);
+	p0.x = 20;
+	p0.y = 220;
+	p1.x = 220;
+	p1.y = 265;
 
-	// Bishop
-	p0.x = 10;
-	p0.y = 210;
-	p1.x = p0.x + 220;
-	p1.y = p0.y + 50;
+	lcd_draw_rect_filled(p0, p1, MENU_COLOR_BLUE);
 
-	bg_color = rgb_24b_to_16b(0x0044DD);
+	p0.x = 20;
+	p0.y = 275;
+	p1.x = 220;
+	p1.y = 315;
 
-	lcd_draw_rect_filled(p0, p1, bg_color);
+	lcd_draw_rect_filled(p0, p1, MENU_COLOR_RED);
 
-	p1.x = p0.x + 20;
-	p1.y = p0.y + 10;
+	// Images
 
-	lcd_draw_text("Bishop", COMICSANSMS(), 18, p1, 0xFFFF, bg_color);
+	p0.x = 25;
+	p0.y = 55;
 
-	// Horse
-	p0.x = 10;
-	p0.y = 280;
-	p1.x = p0.x + 220;
-	p1.y = p0.y + 50;
+	lcd_draw_image(p0, QUEEN());
 
-	bg_color = rgb_24b_to_16b(0x0044DD);
+	p0.x = 25;
+	p0.y = 110;
 
-	lcd_draw_rect_filled(p0, p1, bg_color);
+	lcd_draw_image(p0, KNIGHT());
 
-	p1.x = p0.x + 22;
-	p1.y = p0.y + 10;
+	p0.x = 25;
+	p0.y = 165;
 
-	lcd_draw_text("Horse", COMICSANSMS(), 18, p1, 0xFFFF, bg_color);
+	lcd_draw_image(p0, ROOK());
 
+	p0.x = 25;
+	p0.y = 220;
 
-	// p1.x = 10;
-	// p1.y = p0.y + 70;
+	lcd_draw_image(p0, BISHOP());
 
+	// Text
 
+	p0.x = 50;
+	p0.y = 10;
+
+	lcd_draw_text("Promotion", COMICSANSMS(), 32, p0, 0xFFFF, MENU_COLOR_GREEN);
+
+	p0.x = 80;
+	p0.y = 65;
+
+	lcd_draw_text("Queen", COMICSANSMS(), 32, p0, 0xFFFF, MENU_COLOR_BLUE);
 	
-	// lcd_draw_text("You've pressed", COMICSANSMS(), 16, p1, 0x0000, 0xFFFF);
+	p0.x = 80;
+	p0.y = 120;
 
-	// p1.x = 100;
-	// p1.y = p1.y + 45;
+	lcd_draw_text("Knight", COMICSANSMS(), 32, p0, 0xFFFF, MENU_COLOR_BLUE);
 
-	// lcd_draw_text("0", COMICSANSMS(), 32, p1, 0x0000, 0xFFFF);
+	p0.x = 80;
+	p0.y = 175;
 
-	// p1.x = 80;
-	// p1.y = p1.y + 20;
+	lcd_draw_text("Rook", COMICSANSMS(), 32, p0, 0xFFFF, MENU_COLOR_BLUE);
 
-	// lcd_draw_text("times", COMICSANSMS(), 16, p1, 0x0000, 0xFFFF);
+	p0.x = 80;
+	p0.y = 230;
 
-	lcd_touch_init_postdraw();
+	lcd_draw_text("Bishop", COMICSANSMS(), 32, p0, 0xFFFF, MENU_COLOR_BLUE);
+
+	p0.x = 80;
+	p0.y = 280;
+
+	lcd_draw_text("Cancel", COMICSANSMS(), 32, p0, 0xFFFF, MENU_COLOR_RED);
 }
 
 uint8_t menu_promotion_update() {

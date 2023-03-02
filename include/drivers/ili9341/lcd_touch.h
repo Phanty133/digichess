@@ -37,7 +37,7 @@
 #define __TOUCH_Y_MAX (915)
 #define __TOUCH_Y_DELTA (__TOUCH_Y_MAX - __TOUCH_Y_MIN)
 
-#define __TOUCH_POLL_DELAY 750
+#define __TOUCH_POLL_DELAY 1000
 
 /// @brief Initializes the ADC for reading the touchscreen
 void lcd_touch_init();

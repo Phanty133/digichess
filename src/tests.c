@@ -67,9 +67,7 @@ void debug_touch_setup() {
 	p1.y = LCD_HEIGHT;
 
 	lcd_draw_rect_filled(p0, p1, rgb_24b_to_16b(0x0055AA));
-
-	lcd_wait_available();
-	delay_milli(300);
+	lcd_touch_init_postdraw();
 
 	lcd_touch_debug_raw();
 }
@@ -83,7 +81,7 @@ void debug_ui_setup() {
 	lcd_clear();
 
 	gui_register_all_menus();
-	gui_set_menu(MENU_PROMOTION);
+	gui_set_menu(MENU_SPLASH);
 }
 
 void debug_ui_loop() {

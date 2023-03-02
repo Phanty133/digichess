@@ -3,7 +3,6 @@
 
 #include "drivers/ili9341/lcd_draw.h"
 #include "files/images/logo.bmp.h"
-#include "files/images/viewsonic_1bit.bmp.h"
 #include "delay.h"
 #include "gui/gui.h"
 

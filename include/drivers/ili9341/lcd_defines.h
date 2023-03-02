@@ -6,7 +6,7 @@
 
 #define LCD_WIDTH (240)  // ILI9341 max TFT width
 #define LCD_HEIGHT (320) // ILI9341 max TFT height
-#define LCD_PPI (143)
+#define LCD_PPI (70) // Not actually, but adjusted such that font sizes make sense
 
 /*
 	Pin mask

@@ -1,0 +1,10 @@
+#ifndef __MENU_DEFINES_H
+#define __MENU_DEFINES_H
+
+#define MENU_COLOR_GREEN 0x75E1
+#define MENU_COLOR_GREEN_DARK 0x4322
+
+#define MENU_COLOR_BLUE 0x3214
+#define MENU_COLOR_RED 0x9800
+
+#endif

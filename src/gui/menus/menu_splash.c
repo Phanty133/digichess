@@ -18,8 +18,8 @@ void menu_splash_draw() {
 
 	lcd_draw_image(p, LOGO());
 
-	delay_milli(5000);
-	gui_set_menu(MENU_TEST);
+	delay_milli(3000);
+	gui_set_menu(MENU_MODE);
 }
 
 uint8_t menu_splash_update() {
