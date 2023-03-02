@@ -21,14 +21,17 @@
 #define MUX_OUT_PIN (1)
 #define MUX_OUT_MASK (1 << MUX_OUT_PIN)
 
-#define GRID_ROWS 8
-#define GRID_COLS 8
+#define GRID_ROWS (8)
+#define GRID_COLS (8)
 
 #define GRID_LEDS_PER_SQUARE (3)
 #define GRID_LED_COUNT (GRID_ROWS * GRID_COLS * GRID_LEDS_PER_SQUARE)
-#define GRID_LED_PIN 69 // TODO: Make it actually use this pin
 
 #define GRID_POWER_MASK (1 << 1)
+#define GRID_OFF_TIME (3000) // Must be a multiple of 200ms
+#define GRID_ON_TIME (30)
+
+#define __GRID_OFF_PERIODS (GRID_OFF_TIME / 200)
 
 #include <pic32mx.h>
 #include <stdint.h>
@@ -51,8 +54,21 @@ uint8_t grid_read_square(uint8_t row, uint8_t col);
 /// @param display If 1, updates the LEDs immediately
 void grid_set_color(uint8_t row, uint8_t col, uint32_t color, uint8_t display);
 
+/// @brief Get the raw grid LED data.
+/// @return LED data array
 uint8_t* grid_get_led_data();
 
+/// @brief Blocking sensor power-cycle.
 void grid_reset_sensors();
+
+/// @brief Reads the sensors and updates grid data.
+void grid_update_state();
+
+/// @brief Get the grid state as of the last update
+/// @return 2D array [Rows][Cols] of grid squares. 1 if magnet on the square, 0 otherwise.
+uint8_t* grid_get_state();
+
+/// @brief Should be called every loop cycle
+void grid_loop_update();
 
 #endif

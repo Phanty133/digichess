@@ -3,22 +3,16 @@
 void debug_board_setup() {
 	grid_init();
 
-	TRISFCLR = GRID_POWER_MASK;
-	LATFCLR = GRID_POWER_MASK;
-
 	led_display(grid_get_led_data(), GRID_LED_COUNT);
 }
 
 void debug_board_loop() {
-	grid_reset_sensors();
+	grid_loop_update();
+	uint8_t (*grid_state)[8] = (uint8_t (*)[8])grid_get_state();
 
 	for (int r = 0; r < GRID_ROWS; r++) {
 		for (int c = 0; c < GRID_COLS; c++) {
-			uint32_t color = !grid_read_square(r, c) ? 0x000088 : 0x880000;
-
-			if (c == 7) {
-				uart_write_num(color, 1);
-			}
+			uint32_t color = grid_state[r][c] ? 0x000010 : 0x100000;
 
 			grid_set_color(r, c, color, 0);
 		}

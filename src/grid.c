@@ -1,6 +1,8 @@
 #include "grid.h"
 
-uint8_t LED_DATA[GRID_LED_COUNT * ELS_PER_LED] = {};
+static uint8_t LED_DATA[GRID_LED_COUNT * ELS_PER_LED] = {};
+static uint8_t grid_state[GRID_ROWS][GRID_COLS] = {};
+static uint16_t timer_counter = 0;
 
 void grid_init() {
 	led_init(LED_DATA, led_get_arr_size(GRID_LED_COUNT));
@@ -16,6 +18,26 @@ void grid_init() {
 	TRISBSET = MUX_OUT_MASK;
 	TRISDCLR = mux_select_mask;
 	LATDCLR = mux_select_mask;
+
+	TRISFCLR = GRID_POWER_MASK;
+	LATFSET = GRID_POWER_MASK;
+
+	for (int r = 0; r < GRID_ROWS; r++) {
+		for (int c = 0; c < GRID_COLS; c++) {
+			grid_state[r][c] = 0;
+		}
+	}
+
+	// Set up the grid update timer
+	T2CON = 0x0; // Disable timer while setting up
+  	TMR2 = 0; // Reset count
+
+	PR2 = 62500; // Makes the period 200ms with a prescale of 1:256 
+	T2CONSET = 0x70; // Set prescale value to 1:256
+	IFSCLR(0) = T2IF; // Clear the flag at bit 8
+	IECSET(0) = T2IF; // Enable interrupt at bit 8
+
+	T2CONSET = 0x8000; // Start timer
 }
 
 uint8_t grid_read_square(uint8_t row, uint8_t col) {
@@ -27,7 +49,7 @@ uint8_t grid_read_square(uint8_t row, uint8_t col) {
 	uint8_t c1 = get_bit(col, 1);
 	uint8_t c2 = get_bit(col, 2);
 
-	uint16_t cur_latd = PORTD;
+	uint16_t cur_latd = LATD;
 
 	cur_latd = set_bit(cur_latd, MUX_R0_PIN, r0);
 	cur_latd = set_bit(cur_latd, MUX_R1_PIN, r1);
@@ -38,7 +60,7 @@ uint8_t grid_read_square(uint8_t row, uint8_t col) {
 
 	LATD = cur_latd;
 
-	return get_bit(PORTB, MUX_OUT_PIN);
+	return !get_bit(PORTB, MUX_OUT_PIN);
 }
 
 void grid_set_color(uint8_t row, uint8_t col, uint32_t color, uint8_t display) {
@@ -61,4 +83,33 @@ void grid_reset_sensors() {
 	delay_milli(3000);
 	LATFSET = GRID_POWER_MASK;
 	delay_milli(50);
+}
+
+void grid_update_state() {
+	for (int r = 0; r < GRID_ROWS; r++) {
+		for (int c = 0; c < GRID_COLS; c++) {
+			grid_state[r][c] = grid_read_square(r, c);
+		}
+	}
+}
+
+uint8_t* grid_get_state() {
+	return grid_state;
+}
+
+void grid_loop_update() {
+	if (IFS(0) & T2IF) {
+		IFSCLR(0) = T2IF;
+
+		if (++timer_counter == __GRID_OFF_PERIODS) {
+			timer_counter = 0;
+
+			LATFSET = GRID_POWER_MASK;
+			delay_milli(GRID_ON_TIME); // TODO: Rewrite with timer?
+
+			grid_update_state();
+
+			LATFCLR = GRID_POWER_MASK;
+		}
+	}
 }
