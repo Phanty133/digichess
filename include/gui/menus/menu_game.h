@@ -9,5 +9,6 @@
 void menu_game_setup();
 void menu_game_draw();
 uint8_t menu_game_update();
+void menu_game_change_player();
 
 #endif

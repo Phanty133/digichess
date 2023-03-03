@@ -2,7 +2,6 @@
 
 extern void set_promotion_available();
 
-
 static int AI_mode;
 static int selected_promotion;
 static int blue_turn;
@@ -150,7 +149,6 @@ void draw_chess() {
 void check_movement() {
 	if (is_game_over(chess_flag))
 		return;
-	grid_reset_sensors();
 	
 	if (AI_mode != 0) {
 		grid_set_color(0, 0, 0x0f000f, 1);
@@ -158,21 +156,22 @@ void check_movement() {
 	}
 
 	if (AI_mode && !blue_turn) {
-		grid_reset_sensors();
+		uint8_t (*grid_state)[8] = (uint8_t (*)[8])grid_get_state();
+
 		for (int r = 0; r < GRID_ROWS; r++){
 			for (int c = 0; c < GRID_COLS; c++) {
-				placed_pieces_curr[r][c] = grid_read_square(r, c);
+				placed_pieces_curr[r][c] = grid_state[r][c];
 				grid_set_color(5, 5, 0xff00ff, 1);
+
 				if (placed_pieces_curr[r][c] == placed_pieces_last[r][c]) 
 					continue;
-				grid_set_color(0, 0, 0xff00ff, 1);
-				delay_milli(2000);
-				
 
+				grid_set_color(0, 0, 0xff00ff, 1);
+				delay_milli(2000); // TODO: What is this???
+				
 				if (selected_piece == -1 && !placed_pieces_curr[r][c]) {
 					selected_piece = get_grid_index(r, c);
 					error = selected_piece == AI_selected_piece;
-					
 				} else if (selected_piece == get_grid_index(r, c) && placed_pieces_curr[r][c] && targeted_piece == -1) {
 					selected_piece = -1;
 					error = 0;
@@ -187,16 +186,22 @@ void check_movement() {
 					AI_targetted_piece = -1;
 					AI_selected_piece = -1;
 					selected_piece = -1;
+
+					menu_game_change_player();
 					gui_update();
 				}
 			}
 		}
+
 		update_placed_pieces();
 		return;
 	}
+
+	uint8_t (*grid_state)[8] = (uint8_t (*)[8])grid_get_state();
+
 	for (int r = 0; r < GRID_ROWS; r++){
 		for (int c = 0; c < GRID_COLS; c++) {
-			placed_pieces_curr[r][c] = grid_read_square(r, c);
+			placed_pieces_curr[r][c] = grid_state[r][c];
 			if (placed_pieces_curr[r][c] == placed_pieces_last[r][c]) 
 				continue;
 
@@ -241,13 +246,18 @@ void check_movement() {
 					selected_piece = -1;
 					moves[0] = 0;
 				}
+
 				blue_turn = !blue_turn;
+				menu_game_change_player();
 				gui_update();
+
 				if (AI_mode) {
 					get_AI_move();
 				}
-				if (chess_flag)
+
+				if (chess_flag) {
 					selected_promotion = -1;
+				}
 			} else if (selected_piece != -1 && targeted_piece == -1 && !placed_pieces_curr[r][c]) {
 				targeted_piece = get_grid_index(r, c);
 			}
@@ -258,8 +268,8 @@ void check_movement() {
 }
 
 void game_logic_setup() { 
-	uart_write_line("Chess setup started\n");
-	grid_init();
+	uart_write_line("Starting chess setup\n");
+
 	arrange_board(&chess_board);
 
 	uint8_t (*grid_state)[8] = (uint8_t (*)[8])grid_get_state();
@@ -271,16 +281,13 @@ void game_logic_setup() {
 			grid_set_color(r, c, chess_at_index(&chess_board, get_grid_index(r, c)) ? 0x000008 : 0, 0); 	
 		}
 	}
+
 	led_display(grid_get_led_data(), GRID_LED_COUNT);
+
+	gui_set_menu(MENU_SPLASH);
 	
-	lcd_init();
-	lcd_touch_init();
-	lcd_select();
+	// The splash menu redirects to the mode menu by itself after 3 seconds
 
-	// gui_set_menu(MENU_SPLASH);
-	// delay_milli(3000);
-
-	gui_set_menu(MENU_MODE);
 	AI_mode = -1;
 	while (AI_mode == -1){
 		gui_update();

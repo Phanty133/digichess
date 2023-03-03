@@ -1,10 +1,10 @@
 #include "gui/menus/menu_game.h"
 #include "gui/menus/menu_splash.h"
 
-static uint8_t active_player = 1; // TODO: Integrate with game
+static uint8_t active_player = 1;
 static uint8_t promotion_available = 0; // TODO: Integrate with game
-
-
+static uint8_t redraw_player = 0;
+static uint8_t redraw_promotion = 0;
 
 static uint8_t on_promote_click() {
 	if (!promotion_available) return 0;
@@ -39,13 +39,14 @@ void menu_game_draw() {
 	LCD_Point p0, p1;
 	uint16_t prom_fg_color = promotion_available ? 0xFFFF : 0xAD55;
 	uint16_t prom_bg_color = promotion_available ? MENU_COLOR_GREEN : MENU_COLOR_GREEN_DARK;
+	uint16_t plyr_color = active_player ? MENU_COLOR_BLUE : MENU_COLOR_RED;
 
 	p0.x = 0;
 	p0.y = 0;
 	p1.x = LCD_WIDTH;
 	p1.y = 160;
 
-	lcd_draw_rect_filled(p0, p1, active_player ? MENU_COLOR_BLUE : MENU_COLOR_RED);
+	lcd_draw_rect_filled(p0, p1, plyr_color);
 
 	p0.x = 20;
 	p0.y = 200;
@@ -77,7 +78,7 @@ void menu_game_draw() {
 		42,
 		p0,
 		0xFFFF,
-		MENU_COLOR_RED
+		plyr_color
 	);
 
 	p0.x = 60;
@@ -96,8 +97,46 @@ void menu_game_draw() {
 	lcd_draw_text("0", COMICSANSMS(), 32, p0, 0xFFFF, MENU_COLOR_BLUE);
 }
 
-uint8_t menu_game_update() {
+void menu_game_change_player() {
 	active_player = !active_player;
-	menu_game_draw();
-	return 1;
+	redraw_player = 1;
+}
+
+uint8_t menu_game_update() {
+	uint8_t screen_update = 0;
+
+	if (redraw_player) {
+		LCD_Point p0, p1;
+
+		p0.x = 0;
+		p0.y = 0;
+		p1.x = LCD_WIDTH;
+		p1.y = 160;
+
+		uint16_t plyr_color = active_player ? MENU_COLOR_BLUE : MENU_COLOR_RED;
+
+		lcd_draw_rect_filled(p0, p1, plyr_color);
+
+		p0.x = 20;
+		p0.y = 60;
+
+		lcd_draw_text(
+			active_player ? "Blue's turn" : "Red's turn",
+			COMICSANSMS(),
+			42,
+			p0,
+			0xFFFF,
+			plyr_color
+		);
+
+		screen_update = 1;
+		redraw_player = 0;
+	}
+
+	if (redraw_promotion) {
+		screen_update = 1;
+		redraw_promotion = 0;
+	}
+
+	return screen_update;
 }

@@ -12,7 +12,7 @@
 // #define DEBUG_CHESS_GAME
 // #define DEBUG_TOUCH
 // #define DEBUG_UI
-#define DEBUG_STOCKFISH
+// #define DEBUG_STOCKFISH
 #define FULL_GAME
 
 #ifdef DEBUG_CHESS_GAME
@@ -309,6 +309,12 @@ void setup() {
 #endif
 
 #ifdef FULL_GAME
+	lcd_init();
+	lcd_touch_init();
+	lcd_select();
+	grid_init();
+	gui_register_all_menus();
+	
 	game_logic_setup();
 #endif
 }

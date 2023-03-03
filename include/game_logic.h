@@ -8,8 +8,7 @@
 #include "grid.h"
 #include "gui/gui.h"
 #include "uart.h"
-	
-
+#include "gui/menus/menu_game.h"
 
 void set_AI_mode(int mode);
 int get_AI_mode();
