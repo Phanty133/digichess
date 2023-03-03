@@ -89,6 +89,12 @@ void grid_update_state() {
 	for (int r = 0; r < GRID_ROWS; r++) {
 		for (int c = 0; c < GRID_COLS; c++) {
 			grid_state[r][c] = grid_read_square(r, c);
+
+			if (r == 6) {
+				uart_write_num(c, 0);
+				uart_write(": ");
+				uart_write_num(grid_read_square(r, c), 1);
+			}
 		}
 	}
 }

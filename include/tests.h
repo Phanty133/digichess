@@ -12,6 +12,7 @@
 #include "gui/gui.h"
 #include "gui/gui_register_menus.h"
 #include "files/fonts/ComicSansMS.ttf.h"
+#include "drivers/stockfish/stockfish.h"
 
 void debug_board_setup();
 void debug_board_loop();
@@ -32,5 +33,8 @@ void debug_buzzer_loop();
 
 void debug_chess_setup();
 void debug_chess_loop();
+
+void debug_stockfish_setup();
+void debug_stockfish_loop();
 
 #endif

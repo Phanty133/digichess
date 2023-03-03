@@ -7,10 +7,11 @@
 
 // #define DEBUG_BOARD
 // #define DEBUG_LCD
-#define DEBUG_BUZZER
+// #define DEBUG_BUZZER
 // #define DEBUG_CHESS_GAME
 // #define DEBUG_TOUCH
 // #define DEBUG_UI
+#define DEBUG_STOCKFISH
 
 #ifdef DEBUG_CHESS_GAME
 #include "chess/chess.h"
@@ -241,6 +242,12 @@ void check_movement() {
 void setup() {
 	uart_begin(115200);
 
+	uart_write_line("Starting setup");
+
+#ifdef DEBUG_STOCKFISH
+	debug_stockfish_setup();
+#endif
+
 #ifdef DEBUG_BUZZER
 	debug_buzzer_setup();
 #endif
@@ -297,6 +304,10 @@ void setup() {
 }
 
 void loop() {
+#ifdef DEBUG_STOCKFISH
+	debug_stockfish_loop();
+#endif
+
 #ifdef DEBUG_BOARD
 	debug_board_loop();
 #endif

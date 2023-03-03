@@ -12,7 +12,7 @@ void debug_board_loop() {
 
 	for (int r = 0; r < GRID_ROWS; r++) {
 		for (int c = 0; c < GRID_COLS; c++) {
-			uint32_t color = grid_state[r][c] ? 0x000010 : 0x100000;
+			uint32_t color = grid_state[r][c] ? 0x000005 : 0x050000;
 
 			grid_set_color(r, c, color, 0);
 		}
@@ -97,4 +97,13 @@ void debug_chess_setup() {
 
 void debug_chess_loop() {
 	// TODO: Move chess test here
+}
+
+void debug_stockfish_setup() {
+	uart_write_line("Running Stockfish setup debug");
+	stockfish_setup();
+}
+
+void debug_stockfish_loop() {
+	// stockfish_loop_update();
 }
