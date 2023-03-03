@@ -1,6 +1,8 @@
 #include "chess/chess.h"
-#include "string.h"
-#include "math.h"
+
+
+static int last_move_from;
+static int last_move_to;
 
 /// @brief  Checks whether a set of moves leaves a king exposed to attack and removes all illegal moves
 /// @param moves 
@@ -190,9 +192,13 @@ bool contains_legal_move(int* legal_moves, int move) {
 /// @param white 
 /// @return 
 Piece select_promotion(bool white){
-	// TODO promotion selection
-	if (white) return wQueen;
-	else return bQueen;
+	menu_promotion_setup();
+	gui_set_menu(MENU_PROMOTION);
+	set_selected_promotion(-1);
+	while(get_selected_promotion() == -1) {
+		gui_update();
+	}
+	return white ? get_selected_promotion() : get_selected_promotion()+6;
 }
 
 int move_piece(ChessBoard* board, int y0, int x0, int y1, int x1) {
@@ -206,6 +212,9 @@ int move_piece(ChessBoard* board, int y0, int x0, int y1, int x1) {
 		return ILLEGAL_MOVE; // Code for an attempt at an illegal move
 	
 	MoveFlag flag = NORMAL_MOVE;
+
+	last_move_from = get_index(y0, x0);
+	last_move_to = get_index(y1, x1);
 
 	Piece moved_piece = at(board, y0, x0);
 	
@@ -646,4 +655,37 @@ void check_legal_moves_king(int* moves, ChessBoard* board, int y0, int x0, bool 
 	}
 	for (int i = 0; i <= checked_moves[0]; ++i)
 		moves[i] = checked_moves[i];
+}
+
+uint64_t get_last_move_csi () {
+	uint64_t result;
+	char mov[8];
+	mov[0] = (last_move_from / 8) + 'a';
+	mov[1] = (last_move_from % 8) + '0';
+	mov[2] = (last_move_to / 8) + 'a';
+	mov[3] = (last_move_to % 8) + '0';
+	switch (get_selected_promotion())
+	{
+	case -1:
+		mov[4] = 0;
+		break;
+	case 2:
+		mov[4] = 'r';
+		mov[5] = 0;
+	case 3:
+		mov[4] = 'h';
+		mov[5] = 0;
+		break;
+	case 4:
+		mov[4] = 'b';
+		mov[5] = 0;
+		break;
+	case 5:
+		mov[4] = 'h';
+		mov[5] = 0;
+		break;
+	default:
+		uart_write("ERROR. ILLEGAL PROMOTION AT LAST MOVE\n");
+	}
+	memory_copy((void*)(&result), (void*)mov, 8);
 }

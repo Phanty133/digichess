@@ -9,6 +9,8 @@
 #include "files/images/knight.bmp.h"
 #include "files/images/rook.bmp.h"
 #include "files/images/bishop.bmp.h"
+#include "uart.h"
+#include "game_logic.h"
 
 void menu_promotion_setup();
 void menu_promotion_draw();

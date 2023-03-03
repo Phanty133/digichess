@@ -1,19 +1,40 @@
 #include "gui/menus/menu_promotion.h"
 
 uint8_t on_queen_click() {
-	return 0;
+	set_selected_promotion(5);
+	uart_write("Selected promotion: ");
+	uart_write_num(get_selected_promotion(), 1);
+	menu_game_setup();
+	gui_set_menu(MENU_GAME);
+	return 1;
 }
 
 uint8_t on_knight_click() {
-	return 0;
+	set_selected_promotion(3);
+	uart_write("Selected promotion: ");
+	uart_write_num(get_selected_promotion(), 1);
+	menu_game_setup();
+	gui_set_menu(MENU_GAME);
+	return 1;
 }
 
 uint8_t on_rook_click() {
-	return 0;
+	set_selected_promotion(2);
+	uart_write("Selected promotion: ");
+	uart_write_num(get_selected_promotion(), 1);
+	menu_game_setup();
+	gui_set_menu(MENU_GAME);
+	return 1;
+
 }
 
 uint8_t on_bishop_click() {
-	return 0;
+	set_selected_promotion(4);
+	uart_write("Selected promotion: ");
+	uart_write_num(get_selected_promotion(), 1);
+	menu_game_setup();
+	gui_set_menu(MENU_GAME);
+	return 1;
 }
 
 uint8_t on_cancel_click() {

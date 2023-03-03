@@ -1,8 +1,10 @@
 #include "gui/menus/menu_game.h"
 #include "gui/menus/menu_splash.h"
 
-static uint8_t active_player = 0; // TODO: Integrate with game
+static uint8_t active_player = 1; // TODO: Integrate with game
 static uint8_t promotion_available = 0; // TODO: Integrate with game
+
+
 
 static uint8_t on_promote_click() {
 	if (!promotion_available) return 0;
@@ -95,5 +97,7 @@ void menu_game_draw() {
 }
 
 uint8_t menu_game_update() {
-	return 0;
+	active_player = !active_player;
+	menu_game_draw();
+	return 1;
 }

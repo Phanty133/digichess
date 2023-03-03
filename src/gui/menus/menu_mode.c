@@ -1,13 +1,23 @@
 #include "gui/menus/menu_mode.h"
 
 static uint8_t on_player_click() {
+	set_AI_mode(0);
+	menu_game_setup();
 	gui_set_menu(MENU_GAME);
 
+	uart_write("AI mode: ");
+	uart_write_num(get_AI_mode(), 1);
+	
 	return 1;
 }
 
 static uint8_t on_stockfish_click() {
-	gui_set_menu(MENU_VICTORY);
+	set_AI_mode(1);
+	menu_game_setup();
+	gui_set_menu(MENU_GAME);
+
+	uart_write("AI mode: ");
+	uart_write_num(get_AI_mode(), 1);
 
 	return 1;
 }

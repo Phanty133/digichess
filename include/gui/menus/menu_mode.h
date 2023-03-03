@@ -5,6 +5,7 @@
 #include "files/fonts/ComicSansMS.ttf.h"
 #include "gui/menu_defines.h"
 #include "gui/gui.h"
+#include "game_logic.h"
 
 void menu_mode_setup();
 void menu_mode_draw();
